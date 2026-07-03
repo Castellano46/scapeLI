@@ -685,15 +685,7 @@ class Game:
         pygame.display.set_caption("Marcianitos de San Valentín ❤️ Cupid Attack")
         self.clock = pygame.time.Clock()
         
-        # Bring window to front on startup
-        try:
-            import ctypes
-            hwnd = ctypes.windll.user32.FindWindowW(None, "Marcianitos de San Valentín ❤️ Cupid Attack")
-            if hwnd:
-                ctypes.windll.user32.ShowWindow(hwnd, 5) # SW_SHOW
-                ctypes.windll.user32.SetForegroundWindow(hwnd)
-        except Exception:
-            pass
+        self.focus_brought = False
         
         # Initial structures
         self.assets = AssetManager()
@@ -899,6 +891,49 @@ class Game:
             self.particles.append(Particle(enemy.rect.centerx, enemy.rect.centery, "explosion"))
 
     def update(self):
+        # Forzar la ventana del juego al primer plano en los primeros frames cuando el handle está registrado
+        if not self.focus_brought:
+            try:
+                import ctypes
+                hwnds = []
+                WNDENUMPROC = ctypes.WINFUNCTYPE(ctypes.c_bool, ctypes.c_void_p, ctypes.c_void_p)
+                
+                def enum_windows_callback(hwnd, extra_ptr):
+                    length = ctypes.windll.user32.GetWindowTextLengthW(hwnd)
+                    if length > 0:
+                        buf = ctypes.create_unicode_buffer(length + 1)
+                        ctypes.windll.user32.GetWindowTextW(hwnd, buf, length + 1)
+                        if "Marcianitos" in buf.value:
+                            hwnds.append(hwnd)
+                    return True
+                
+                callback = WNDENUMPROC(enum_windows_callback)
+                ctypes.windll.user32.EnumWindows(callback, 0)
+                if hwnds:
+                    hwnd = hwnds[0]
+                    # Restaurar y forzar al frente usando AttachThreadInput para saltar el bloqueo de Windows
+                    try:
+                        fore_hwnd = ctypes.windll.user32.GetForegroundWindow()
+                        if fore_hwnd and fore_hwnd != hwnd:
+                            fore_thread = ctypes.windll.user32.GetWindowThreadProcessId(fore_hwnd, None)
+                            curr_thread = ctypes.windll.kernel32.GetCurrentThreadId()
+                            
+                            ctypes.windll.user32.AttachThreadInput(curr_thread, fore_thread, True)
+                            ctypes.windll.user32.ShowWindow(hwnd, 9) # SW_RESTORE
+                            ctypes.windll.user32.SetForegroundWindow(hwnd)
+                            ctypes.windll.user32.SetActiveWindow(hwnd)
+                            ctypes.windll.user32.SetFocus(hwnd)
+                            ctypes.windll.user32.AttachThreadInput(curr_thread, fore_thread, False)
+                        else:
+                            ctypes.windll.user32.ShowWindow(hwnd, 9)
+                            ctypes.windll.user32.SetForegroundWindow(hwnd)
+                    except Exception:
+                        ctypes.windll.user32.ShowWindow(hwnd, 9)
+                        ctypes.windll.user32.SetForegroundWindow(hwnd)
+                    self.focus_brought = True
+            except Exception:
+                self.focus_brought = True
+
         mouse_pos = pygame.mouse.get_pos()
         
         # 1. Background particles update in every state for visual consistency

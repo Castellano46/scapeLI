@@ -682,44 +682,50 @@ function checkRiddleNumber() {
 // ==========================================
 let scorePollInterval = null;
 
+let failedAttempts = 0;
+
+function checkRemoteScores() {
+  if (gameState.puzzles.study.solved) {
+    if (scorePollInterval) clearInterval(scorePollInterval);
+    return;
+  }
+
+  fetch('http://localhost:8082/check-score')
+    .then(response => {
+      if (!response.ok) throw new Error("Server error");
+      return response.json();
+    })
+    .then(data => {
+      const scores = data.high_scores || [];
+      // Buscar si algún jugador consiguió >= 100 puntos
+      const hasPassed = scores.some(s => s.score >= 100);
+      if (hasPassed) {
+        unlockStudyInput();
+        if (scorePollInterval) clearInterval(scorePollInterval);
+      }
+    })
+    .catch(err => {
+      failedAttempts++;
+      console.warn("No se pudo conectar con el servidor de puntuaciones.", err);
+      // Si falla más de 3 veces, mostramos el bypass opcional
+      if (failedAttempts >= 3) {
+        const statusEl = document.getElementById("study-game-status");
+        if (statusEl && !statusEl.innerHTML.includes("bypass")) {
+          statusEl.innerHTML = `Esperando puntuación... <br><span style="font-size:0.75rem; opacity:0.8; cursor:pointer; text-decoration:underline;" onclick="window.unlockStudyInput()">[Desbloquear casillero manualmente]</span>`;
+        }
+      }
+    });
+}
+
 function startScorePolling() {
   if (gameState.puzzles.study.solved) return;
   if (scorePollInterval) clearInterval(scorePollInterval);
 
-  let failedAttempts = 0;
-  
-  scorePollInterval = setInterval(() => {
-    if (gameState.puzzles.study.solved) {
-      clearInterval(scorePollInterval);
-      return;
-    }
-
-    fetch('http://localhost:8082/check-score')
-      .then(response => {
-        if (!response.ok) throw new Error("Server error");
-        return response.json();
-      })
-      .then(data => {
-        const scores = data.high_scores || [];
-        // Buscar si algún jugador consiguió >= 100 puntos
-        const hasPassed = scores.some(s => s.score >= 100);
-        if (hasPassed) {
-          unlockStudyInput();
-          clearInterval(scorePollInterval);
-        }
-      })
-      .catch(err => {
-        failedAttempts++;
-        console.warn("No se pudo conectar con el servidor de puntuaciones.", err);
-        // Si falla más de 3 veces, mostramos el bypass opcional
-        if (failedAttempts >= 3) {
-          const statusEl = document.getElementById("study-game-status");
-          if (statusEl && !statusEl.innerHTML.includes("bypass")) {
-            statusEl.innerHTML = `Esperando puntuación... <br><span style="font-size:0.75rem; opacity:0.8; cursor:pointer; text-decoration:underline;" onclick="window.unlockStudyInput()">[Desbloquear casillero manualmente]</span>`;
-          }
-        }
-      });
-  }, 3000);
+  failedAttempts = 0;
+  // Comprobación inmediata
+  checkRemoteScores();
+  // Sondeo cada 1 segundo
+  scorePollInterval = setInterval(checkRemoteScores, 1000);
 }
 
 function unlockStudyInput() {
@@ -1072,7 +1078,7 @@ function renderSafeKeyboard() {
   const scroll = document.getElementById("victory-scroll");
 
   if (gameState.isFinished) {
-    screen.textContent = "ABIER";
+    screen.textContent = "ABIERTO";
     screen.classList.add("success");
 
     if (door) door.classList.add("open");
@@ -1673,15 +1679,13 @@ document.addEventListener("DOMContentLoaded", () => {
   if (playBtnGame) {
     playBtnGame.addEventListener("click", () => {
       playSound("click");
-      fetch('http://localhost:8082/launch-game', { method: 'POST' })
-        .then(res => {
-          if (!res.ok) throw new Error("Launch error");
-          console.log("Juego lanzado.");
-        })
-        .catch(err => {
-          console.warn("No se pudo iniciar el juego automáticamente. Intentando descarga directa.", err);
-          window.open("Ignacio&Lucia/Marcianitos/Maya Invaders ❤️.exe", "_blank");
-        });
+      // Cargar como imagen para saltarse las restricciones CORS de file:/// en navegadores modernos
+      const img = new Image();
+      img.onload = () => {
+        // En cuanto el juego se cierre, forzar una comprobación de puntuación inmediata
+        checkRemoteScores();
+      };
+      img.src = 'http://localhost:8082/launch-game?nocache=' + Date.now();
     });
   }
 
@@ -1741,6 +1745,24 @@ document.addEventListener("DOMContentLoaded", () => {
       if (e.key === 'Enter') verifyFinalChallenge();
     });
   }
+
+  // Soporte para entrada física de teclado en la caja fuerte
+  document.addEventListener("keydown", (e) => {
+    // Solo actuar si están en la sala de la caja fuerte y no está ya abierta
+    if (gameState.currentRoom !== "safe" || gameState.isFinished) return;
+    
+    // Evitar interceptar si se está escribiendo en algún input activo (por si acaso)
+    if (document.activeElement.tagName === "INPUT" || document.activeElement.tagName === "TEXTAREA") return;
+
+    const key = e.key;
+    if (key >= '0' && key <= '9') {
+      pressSafeKey(key);
+    } else if (key === 'Backspace' || key === 'Delete') {
+      pressSafeKey('clear');
+    } else if (key === 'Enter') {
+      pressSafeKey('enter');
+    }
+  });
 
   // Easter egg del mono - Cerrar al hacer clic en cualquier parte de la pantalla
   const monoOverlay = document.getElementById("mono-overlay");
