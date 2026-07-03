@@ -1142,11 +1142,6 @@ function verifySafeCode() {
         
         document.getElementById("victory-time").textContent = `${minutes}m ${seconds}s`;
         document.getElementById("victory-hints").textContent = gameState.hintsUsed;
-        
-        // Mostrar overlay de victoria completo tras breve delay
-        setTimeout(() => {
-          document.getElementById("victory-overlay").classList.remove("hidden");
-        }, 5000);
       }, 1500);
     }, 1500);
 
@@ -1669,6 +1664,14 @@ document.addEventListener("DOMContentLoaded", () => {
     resetGameData();
     renderState();
   });
+
+  // Botón para finalizar aventura en el pergamino
+  const showVictoryBtn = document.getElementById("btn-show-victory");
+  if (showVictoryBtn) {
+    showVictoryBtn.addEventListener("click", () => {
+      document.getElementById("victory-overlay").classList.remove("hidden");
+    });
+  }
 
   // Easter egg del mono - Cerrar al hacer clic en cualquier parte de la pantalla
   const monoOverlay = document.getElementById("mono-overlay");
