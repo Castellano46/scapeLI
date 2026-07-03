@@ -5,7 +5,7 @@
 
 // Configuración general del juego
 const GAME_CONFIG = {
-  correctCombination: "4358",
+  correctCombination: "4698",
   initialTimeSeconds: 1800, // 30 minutos
   caesarShiftTarget: 3,
   elementsOrderTarget: ["fuego", "agua", "tierra", "aire"],
@@ -21,8 +21,8 @@ let gameState = {
   soundEnabled: false,
   puzzles: {
     riddle: { solved: false, digit: "4", songGuessed: false },
-    study: { solved: false, digit: "8" },
-    caesar: { solved: false, digit: "5", currentShift: 0 },
+    study: { solved: false, digit: "6" },
+    caesar: { solved: false, digit: "9", currentShift: 0 },
     elements: { solved: false, digit: "8", currentOrder: ["tierra", "fuego", "aire", "agua"] }
   },
   hintsUsed: 0,
@@ -375,17 +375,16 @@ function loadGame() {
 
 // Reiniciar partida
 function resetGameData() {
-  localStorage.removeItem("escape_room_state");
   gameState = {
     timeRemaining: GAME_CONFIG.initialTimeSeconds,
     isPlaying: false,
     isFinished: false,
-    currentRoom: "intro",
+    currentRoom: "intro", // intro, riddle, study, caesar, elements, safe, victory
     soundEnabled: false,
     puzzles: {
       riddle: { solved: false, digit: "4", songGuessed: false },
-      study: { solved: false, digit: "8" },
-      caesar: { solved: false, digit: "5", currentShift: 0 },
+      study: { solved: false, digit: "6" },
+      caesar: { solved: false, digit: "9", currentShift: 0 },
       elements: { solved: false, digit: "8", currentOrder: ["tierra", "fuego", "aire", "agua"] }
     },
     hintsUsed: 0,
@@ -396,8 +395,36 @@ function resetGameData() {
       elements: 0
     }
   };
+  
+  // Resetear buffers y estados globales
+  safeInputBuffer = "";
   stopTimer();
   stopAmbientMusic();
+
+  // Limpiar inputs en la interfaz y resetear estado bloqueado
+  const inputSong = document.getElementById("riddle-input-song");
+  const inputNum = document.getElementById("riddle-input-number");
+  const inputStudy = document.getElementById("study-input-number");
+  const btnStudy = document.getElementById("btn-check-study");
+  const studyStatus = document.getElementById("study-game-status");
+
+  if (inputSong) inputSong.value = "";
+  if (inputNum) inputNum.value = "";
+  if (inputStudy) {
+    inputStudy.value = "";
+    inputStudy.setAttribute("disabled", "true");
+    inputStudy.placeholder = "EL CASILLERO ESTÁ BLOQUEADO...";
+  }
+  if (btnStudy) {
+    btnStudy.setAttribute("disabled", "true");
+  }
+  if (studyStatus) {
+    studyStatus.innerHTML = "El casillero está bloqueado. Esperando puntuación de 100 puntos...";
+    studyStatus.style.color = "";
+  }
+
+  // Guardar partida vacía en LocalStorage
+  saveGame();
 
   // Resetear puntuaciones en el servidor
   fetch('http://localhost:8082/reset-scores', { method: 'POST' }).catch(err => {
@@ -723,7 +750,7 @@ function checkStudyNumber() {
   if (!input) return;
   const answer = input.value.trim();
   
-  if (answer === "8" || answer.toUpperCase() === "OCHO") {
+  if (answer === "6" || answer.toUpperCase() === "SEIS") {
     playSound("success");
     gameState.puzzles.study.solved = true;
     saveGame();
@@ -776,7 +803,7 @@ function renderCaesarPuzzle() {
     shiftTextDisplay.textContent = `DESPLAZAMIENTO: +${shiftVal}`;
   }
 
-  const cipherText = "HOW HUFHU GLJLWR HV HO FLQFR";
+  const cipherText = "HOW HUFHU GLJLWR HV HO QXHYH";
   const decrypted = decryptCaesar(cipherText, shiftVal);
   
   if (decryptedDisplay) {
@@ -1017,14 +1044,15 @@ function renderSafeKeyboard() {
   const screen = document.getElementById("safe-screen");
   if (!screen) return;
 
+  const door = document.getElementById("safe-door");
+  const wheel = document.getElementById("safe-wheel");
+  const ledRed = document.getElementById("led-red");
+  const ledGreen = document.getElementById("led-green");
+  const scroll = document.getElementById("victory-scroll");
+
   if (gameState.isFinished) {
     screen.textContent = "ABIER";
     screen.classList.add("success");
-    const door = document.getElementById("safe-door");
-    const wheel = document.getElementById("safe-wheel");
-    const ledRed = document.getElementById("led-red");
-    const ledGreen = document.getElementById("led-green");
-    const scroll = document.getElementById("victory-scroll");
 
     if (door) door.classList.add("open");
     if (wheel) wheel.classList.add("spinning");
@@ -1036,10 +1064,11 @@ function renderSafeKeyboard() {
     screen.textContent = safeInputBuffer.padEnd(4, "-");
     screen.classList.remove("success");
     
-    const ledRed = document.getElementById("led-red");
-    const ledGreen = document.getElementById("led-green");
+    if (door) door.classList.remove("open");
+    if (wheel) wheel.classList.remove("spinning");
     if (ledRed) ledRed.classList.remove("red");
     if (ledGreen) ledGreen.classList.remove("green");
+    if (scroll) scroll.classList.remove("unfolded");
   }
 }
 
