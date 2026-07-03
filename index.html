@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>La Búsqueda del Sobre Sagrado 💍💸</title>
+  <!-- FontAwesome para iconos de la interfaz -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Archivo de estilos principal -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- PANTALLA DE INTRODUCCIÓN (OVERLAY INICIAL) -->
+  <div id="intro-overlay" class="overlay">
+    <div class="intro-card">
+      <h1>La Búsqueda del Sobre Sagrado 💍💸</h1>
+      <p class="intro-story">
+        "Tras sobrevivir a la ceremonia, esquivar las lágrimas de emoción y resistir la tentación de arrasar la barra libre antes de tiempo, os enfrentáis al reto más importante del día.<br><br>
+        Cuenta la leyenda que, en algún rincón de este lugar, se oculta el <span class="sobre-sagrado-glow">Sobre Sagrado ✉️✨</span>. Durante generaciones, muchos han intentado encontrarlo, pero solo los elegidos lograrán descubrir su paradero.<br><br>
+        Un misterioso sobre que contiene la legendaria dádiva ha desaparecido. Las malas lenguas cuentan y afirman que fue escondido en las mismísimas entrañas de esta morada por mentes tan infames (como la de vuestro querido Pedro, empeñado en haceros sudar un poco antes de daros el regalo) y solo podrá ser descubierto por una intrépida y astuta pareja.<br><br>
+        Para recuperarlo, deberéis superar acertijos, resolver pruebas y seguir las pistas que os conducirán hasta su escondite. Cada desafío os acercará un paso más al tesoro.<br><br>
+        Reunid vuestro ingenio y haceos merecedores de dicho botín.<br><br>
+        Pero cuidado... el tiempo corre y solo el equipo de los elegidos podrá alzarse con la gloria.<br><br>
+        La búsqueda comienza ahora."
+      </p>
+      
+      <div class="intro-instructions">
+        <h3>Instrucciones de la Búsqueda:</h3>
+        <ul>
+          <li>Explorad los 4 rincones del banquete interactuando con el menú lateral.</li>
+          <li>Resolved cada acertijo para conseguir uno de los dígitos de la combinación.</li>
+          <li>Podéis usar el sistema de pistas si os quedáis atascados.</li>
+          <li>Introducid los 4 dígitos en el cofre final para revelar el Sobre Sagrado.</li>
+        </ul>
+      </div>
+
+      <button id="btn-start-adventure" class="btn-gold">Comenzar Búsqueda</button>
+    </div>
+  </div>
+
+  <!-- PANTALLA DE VICTORIA (OVERLAY DE CELEBRACIÓN FINAL) -->
+  <div id="victory-overlay" class="overlay hidden">
+    <div class="intro-card victory-card">
+      <svg class="victory-icon" viewBox="0 0 24 24">
+        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+      </svg>
+      <h1 class="victory-title">¡Vivan los Novios! 🥂❤️</h1>
+      <p id="victory-desc-text" class="intro-story">
+        ¡Ignacio y Lucía, habéis demostrado ser la pareja perfecta! Habéis resuelto todos los desafíos y encontrado el Sobre Sagrado.
+      </p>
+
+      <div class="victory-details">
+        <p>Tiempo empleado: <strong id="victory-time">00:00</strong></p>
+        <p>Pistas de Pedro usadas: <strong id="victory-hints">0</strong></p>
+      </div>
+
+      <button id="victory-reset-btn" class="btn-gold">Jugar de Nuevo</button>
+    </div>
+  </div>
+
+  <!-- CANVAS FLOTANTE DE PARTÍCULAS Y FUEGOS ARTIFICIALES -->
+  <canvas id="celebration-canvas" class="celebration-canvas"></canvas>
+
+  <!-- CONTENEDOR PRINCIPAL DEL JUEGO -->
+  <div class="game-container">
+    
+    <!-- ENCABEZADO -->
+    <header class="game-header">
+      <div class="header-title">
+        <h2>Boda de Ignacio & Lucía 💍</h2>
+      </div>
+
+      <!-- Indicador visual del progreso global (4 dígitos) -->
+      <div class="progress-container">
+        <span style="font-size: 0.85rem; color: var(--gold); font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;">Combinación:</span>
+        <div class="progress-slots">
+          <div id="slot-1" class="digit-slot">?</div>
+          <div id="slot-2" class="digit-slot">?</div>
+          <div id="slot-3" class="digit-slot">?</div>
+          <div id="slot-4" class="digit-slot">?</div>
+        </div>
+      </div>
+
+      <!-- Controles de tiempo, sonido y reinicio -->
+      <div class="header-controls">
+        <div class="timer-box">
+          <i class="far fa-clock"></i>
+          <span id="timer-display">30:00</span>
+        </div>
+        <button id="sound-toggle" class="header-btn" title="Activar/Silenciar sonido">
+          <i class="fas fa-volume-mute"></i>
+        </button>
+        <button id="reset-btn" class="header-btn" title="Reiniciar aventura">
+          <i class="fas fa-redo-alt"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- ESCENARIO CENTRAL -->
+    <main class="main-stage">
+      
+      <!-- NAVEGACIÓN LATERAL (SALAS Y CAJA FUERTE) -->
+      <nav class="room-navigation">
+        <div class="nav-section-title">Desafíos</div>
+        
+        <button id="nav-riddle" class="nav-btn active">
+          <div class="nav-btn-info">
+            <span class="nav-btn-title">Sala I: El Acertijo</span>
+            <span class="nav-btn-desc">Acertijo de los novios</span>
+          </div>
+          <span class="nav-status"><i class="fas fa-lock"></i></span>
+        </button>
+
+        <button id="nav-study" class="nav-btn">
+          <div class="nav-btn-info">
+            <span class="nav-btn-title">Sala II: Marcianitos</span>
+            <span class="nav-btn-desc">Reto Maya Invaders</span>
+          </div>
+          <span class="nav-status"><i class="fas fa-lock"></i></span>
+        </button>
+
+        <button id="nav-caesar" class="nav-btn">
+          <div class="nav-btn-info">
+            <span class="nav-btn-title">Sala III: El Mensaje</span>
+            <span class="nav-btn-desc">Descifrar código secreto</span>
+          </div>
+          <span class="nav-status"><i class="fas fa-lock"></i></span>
+        </button>
+
+        <button id="nav-elements" class="nav-btn">
+          <div class="nav-btn-info">
+            <span class="nav-btn-title">Sala IV: Las Alianzas</span>
+            <span class="nav-btn-desc">El orden del matrimonio</span>
+          </div>
+          <span class="nav-status"><i class="fas fa-lock"></i></span>
+        </button>
+
+        <div class="nav-section-title" style="margin-top: 15px;">Objetivo Final</div>
+
+        <button id="nav-safe" class="nav-btn" style="border-color: var(--gold-dark);">
+          <div class="nav-btn-info">
+            <span class="nav-btn-title" style="color: var(--gold);">El Sobre Sagrado</span>
+            <span class="nav-btn-desc">Abrir el cofre</span>
+          </div>
+          <span class="nav-status" style="border-color: var(--gold);"><i class="fas fa-envelope-open-text" style="color: var(--gold);"></i></span>
+        </button>
+      </nav>
+
+      <!-- ESPACIO DE TRABAJO ACTIVO -->
+      <section class="active-workspace">
+
+        <!-- PRUEBA 1: ACERTIJO LÓGICO -->
+        <div id="pane-riddle" class="puzzle-pane active">
+          <div class="puzzle-header">
+            <div class="puzzle-title">
+              <h3>Prueba I: El Acertijo del Amor</h3>
+              <p>Escuchad la melodía nupcial para descubrir el primer número del cofre.</p>
+            </div>
+            <button id="hint-btn-riddle" class="hints-btn"><i class="far fa-lightbulb"></i> Pista</button>
+          </div>
+
+          <div class="puzzle-content">
+            <!-- UI Activa -->
+            <div id="riddle-active-ui" style="display: flex; flex-direction: column; align-items: center; gap: 20px; width: 100%;">
+              <div class="riddle-scroll">
+                "Para abrir el primer cerrojo, debéis afinar vuestro oído.<br>
+                Escuchad la melodía que acompaña a los enamorados en su día especial.<br><br>
+                <strong>Paso 1:</strong> Identificad el nombre original de la obra en inglés.<br>
+                <strong>Paso 2:</strong> Una vez descubierta... ¿qué número sagrado oculta en su estructura?"
+              </div>
+              
+              <!-- Reproductor de audio romántico -->
+              <audio id="audio-cannon" src="Ignacio&Lucia/musica.mp3"></audio>
+              <div class="romantic-player">
+                <button id="btn-play-audio" class="player-heart-btn" title="Reproducir música de amor">
+                  <i class="fas fa-heart"></i>
+                </button>
+                <div class="player-progress-container" id="player-progress-container">
+                  <div id="player-progress-bar" class="player-progress-bar">
+                    <div class="player-heart-handle"><i class="fas fa-heart"></i></div>
+                  </div>
+                </div>
+                <div id="player-time" class="player-time">00:00 / 00:00</div>
+              </div>
+
+              <!-- PASO 1: Adivinar canción -->
+              <div id="riddle-step1-container" class="riddle-input-container" style="display: flex; gap: 15px; width: 100%; max-width: 500px;">
+                <input type="text" id="riddle-input-song" class="puzzle-input" placeholder="ESCRIBE EL NOMBRE DE LA CANCIÓN..." autocomplete="off" style="text-transform: uppercase;">
+                <button id="btn-check-song" class="btn-action">Resolver Paso 1</button>
+              </div>
+
+              <!-- PASO 2: Adivinar número (oculto por defecto) -->
+              <div id="riddle-step2-container" class="riddle-input-container" style="display: none; flex-direction: column; align-items: center; gap: 15px; width: 100%;">
+                <p style="color: var(--gold); font-size: 0.95rem; text-align: center; font-weight: bold; margin-bottom: 5px;">
+                  ¡Melodía identificada! "Canon in D" resuena en el aire.<br>
+                  Ahora, deducid el número sagrado oculto en su título original y escribidlo abajo.
+                </p>
+                <div style="display: flex; gap: 15px; width: 100%; max-width: 500px;">
+                  <input type="text" id="riddle-input-number" class="puzzle-input" placeholder="ESCRIBE EL NÚMERO SAGRADO..." autocomplete="off">
+                  <button id="btn-check-number" class="btn-action">Resolver Paso 2</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- UI Resuelto -->
+            <div id="riddle-solved-ui" class="puzzle-solved-indicator">
+              <h4>¡Acertijo Resuelto!</h4>
+              <p>El pergamino nupcial brilla revelando el primer dígito de la combinación (D = 4):</p>
+              <div class="unlocked-digit-reveal">4</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PRUEBA 2: DESPACHO / BÚSQUEDA DE PISTA OCULTA -->
+        <div id="pane-study" class="puzzle-pane">
+          <div class="puzzle-header">
+            <div class="puzzle-title">
+              <h3>Prueba II: El Reto de Maya Invaders</h3>
+              <p>Demostrad vuestra destreza en los videojuegos de los novios para conseguir el segundo dígito.</p>
+            </div>
+            <button id="hint-btn-study" class="hints-btn"><i class="far fa-lightbulb"></i> Pista</button>
+          </div>
+
+          <div class="puzzle-content">
+            <!-- UI Activa -->
+            <div id="study-active-ui" style="display: flex; flex-direction: column; align-items: center; gap: 20px; width: 100%;">
+              <div class="riddle-scroll">
+                "Para obtener el segundo dígito, deberéis demostrar vuestra complicidad en los marcianitos.<br><br>
+                Haced clic en el botón de abajo para iniciar el juego <strong>Maya Invaders ❤️</strong> y lograd alcanzar una puntuación mínima de <strong>100 puntos</strong>.<br><br>
+                Una vez consigáis la puntuación, el panel de abajo se activará automáticamente y os permitirá registrar el número sagrado."
+              </div>
+
+              <!-- Botón Jugar -->
+              <div style="display: flex; flex-direction: column; align-items: center; gap: 10px;">
+                <button id="btn-play-game" class="btn-gold" style="padding: 12px 30px; font-size: 1rem;"><i class="fas fa-gamepad"></i> Jugar a Maya Invaders</button>
+                <div id="study-game-status" style="font-size: 0.85rem; color: var(--rose-gold); text-align: center; margin-top: 5px;">
+                  El casillero está bloqueado. Esperando puntuación de 100 puntos...
+                </div>
+              </div>
+
+              <!-- Input bloqueado -->
+              <div class="riddle-input-container" style="display: flex; gap: 15px; width: 100%; max-width: 500px;">
+                <input type="text" id="study-input-number" class="puzzle-input" placeholder="EL CASILLERO ESTÁ BLOQUEADO..." disabled autocomplete="off">
+                <button id="btn-check-study" class="btn-action" disabled>Validar Número</button>
+              </div>
+            </div>
+
+            <!-- UI Resuelto -->
+            <div id="study-solved-ui" class="puzzle-solved-indicator">
+              <h4>¡Reto Superado!</h4>
+              <p>¡Puntuación de 100 puntos alcanzada en Maya Invaders! El segundo dígito es:</p>
+              <div class="unlocked-digit-reveal">8</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PRUEBA 3: CÓDIGO SECRETO (DECIFRADOR CÉSAR) -->
+        <div id="pane-caesar" class="puzzle-pane">
+          <div class="puzzle-header">
+            <div class="puzzle-title">
+              <h3>Prueba III: El Mensaje Grabado</h3>
+              <p>Gira la rueda exterior de las alianzas para descifrar el mensaje secreto.</p>
+            </div>
+            <button id="hint-btn-caesar" class="hints-btn"><i class="far fa-lightbulb"></i> Pista</button>
+          </div>
+
+          <div class="puzzle-content">
+            <!-- UI Activa -->
+            <div id="caesar-active-ui" class="decoder-widget">
+              
+              <!-- Rueda César Interactiva en SVG -->
+              <div class="cipher-wheel-container">
+                <!-- Flecha de alineación fija -->
+                <svg style="position: absolute; top: -15px; left: calc(50% - 10px); width: 20px; height: 20px; z-index: 10;" viewBox="0 0 24 24">
+                  <path d="M24 22h-24l12-20z" fill="var(--gold)" filter="drop-shadow(0 0 3px var(--gold))"/>
+                </svg>
+
+                <svg viewBox="0 0 260 260" style="width: 100%; height: 100%;">
+                  <defs>
+                    <radialGradient id="metallic-gold" cx="50%" cy="50%" r="50%">
+                      <stop offset="0%" stop-color="#4a3e26"/>
+                      <stop offset="70%" stop-color="#1f1a10"/>
+                      <stop offset="100%" stop-color="#0e0b07"/>
+                    </radialGradient>
+                    <radialGradient id="metallic-cyan" cx="50%" cy="50%" r="50%">
+                      <stop offset="0%" stop-color="#163740"/>
+                      <stop offset="85%" stop-color="#0a181d"/>
+                      <stop offset="100%" stop-color="#03070a"/>
+                    </radialGradient>
+                  </defs>
+
+                  <!-- Rueda Exterior (Estática pero contenedora de letras generadas en JS) -->
+                  <g id="svg-wheel-outer" class="cipher-wheel-outer">
+                    <circle cx="130" cy="130" r="125" fill="url(#metallic-gold)" stroke="var(--gold)" stroke-width="4"/>
+                    <circle cx="130" cy="130" r="95" fill="none" stroke="var(--gold)" stroke-width="1.5" stroke-dasharray="3,3" opacity="0.5"/>
+                  </g>
+
+                  <!-- Rueda Interior (Móvil, girará por JS) -->
+                  <g id="svg-wheel-inner" class="cipher-wheel-inner" style="transform-origin: 130px 130px;">
+                    <circle cx="130" cy="130" r="92" fill="url(#metallic-cyan)" stroke="var(--cyan)" stroke-width="3"/>
+                    <circle cx="130" cy="130" r="60" fill="none" stroke="var(--cyan)" stroke-width="1" opacity="0.3"/>
+                    <circle cx="130" cy="130" r="15" fill="#000" stroke="var(--cyan)" stroke-width="1.5"/>
+                  </g>
+                </svg>
+              </div>
+
+              <!-- Controles de rotación -->
+              <div class="wheel-controls">
+                <button id="btn-wheel-left" class="wheel-btn" title="Girar izquierda"><i class="fas fa-undo"></i></button>
+                <div id="shift-text" class="wheel-shift-indicator">DESPLAZAMIENTO: +0</div>
+                <button id="btn-wheel-right" class="wheel-btn" title="Girar derecha"><i class="fas fa-redo"></i></button>
+              </div>
+
+              <!-- Texto Cifrado y su traducción -->
+              <div class="encrypted-box">
+                <div class="encrypted-label">Grabado en las Alianzas:</div>
+                <div class="encrypted-text">HOW HUFHU GLJLWR HV HO FLQFR</div>
+                <div class="encrypted-label" style="margin-top: 15px;">Mensaje Descifrado:</div>
+                <div id="decrypted-text" class="decrypted-text-display">...</div>
+              </div>
+
+              <button id="btn-verify-caesar" class="btn-action" style="padding: 12px 35px;">Registrar Código</button>
+            </div>
+
+            <!-- UI Resuelto -->
+            <div id="caesar-solved-ui" class="puzzle-solved-indicator">
+              <h4>¡Mensaje Decodificado!</h4>
+              <p>El grabado nupcial revela con destellos el tercer dígito de la combinación:</p>
+              <div class="unlocked-digit-reveal">5</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PRUEBA 4: PUZZLE DE ELEMENTOS -->
+        <div id="pane-elements" class="puzzle-pane">
+          <div class="puzzle-header">
+            <div class="puzzle-title">
+              <h3>Prueba IV: Las Claves del Matrimonio</h3>
+              <p>Ordena los pilares de la pareja de mayor a menor poder según la cadena descrita.</p>
+            </div>
+            <button id="hint-btn-elements" class="hints-btn"><i class="far fa-lightbulb"></i> Pista</button>
+          </div>
+
+          <div class="puzzle-content">
+            <!-- UI Activa -->
+            <div id="elements-active-ui" class="elements-puzzle-container">
+              <div class="elements-riddle">
+                "En la vida en común, el Fuego de la pasión aviva y consume al Aire de las dudas, el Agua de la calma apacigua al Fuego del enojo,<br>
+                y la Tierra de la paciencia absorbe al Agua. Ordenadlos del que tiene mayor poder de cambio en esta cadena al que lo contiene."<br>
+                <span style="font-size: 0.8rem; color: var(--gold-dark);">(Arrastra los elementos o haz clic para intercambiarlos)</span>
+              </div>
+
+              <!-- Slots contenedores de las runas elementales -->
+              <div id="elements-slots-container" class="elements-slots">
+                <!-- Se poblarán dinámicamente mediante JS -->
+              </div>
+            </div>
+
+            <!-- UI Resuelto -->
+            <div id="elements-solved-ui" class="puzzle-solved-indicator">
+              <h4>¡Pilares Alineados!</h4>
+              <p>Las runas del matrimonio brillan entregando el último dígito:</p>
+              <div class="unlocked-digit-reveal">8</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- LA CAJA FUERTE (OBJETIVO FINAL) -->
+        <div id="pane-safe" class="puzzle-pane">
+          <div class="puzzle-header">
+            <div class="puzzle-title">
+              <h3>El Cofre del Sobre Sagrado</h3>
+              <p>Reunid los cuatro dígitos descubiertos en las pruebas e introducidlos en el panel táctil.</p>
+            </div>
+          </div>
+
+          <div class="puzzle-content">
+            <div class="vault-panel">
+              
+              <!-- Caja Fuerte en 3D -->
+              <div class="vault-container-3d">
+                <!-- Bisagras de la puerta -->
+                <div class="vault-hinge vault-hinge-top"></div>
+                <div class="vault-hinge vault-hinge-bottom"></div>
+
+                <!-- Puerta de la caja fuerte (Gira lateralmente) -->
+                <div id="safe-door" class="vault-door">
+                  <!-- Rueda del Dial Metálico Central -->
+                  <div class="vault-wheel-wrapper">
+                    <!-- SVG de Rueda Dentada y Radios de Caja Fuerte -->
+                    <svg id="safe-wheel" class="vault-wheel" viewBox="0 0 200 200">
+                      <!-- Aro Exterior -->
+                      <circle cx="100" cy="100" r="85" fill="none" stroke="#6b7280" stroke-width="8"/>
+                      <circle cx="100" cy="100" r="75" fill="none" stroke="url(#gold-grad)" stroke-width="4"/>
+                      <!-- Radios / Manubrios -->
+                      <line x1="100" y1="15" x2="100" y2="185" stroke="#9ca3af" stroke-width="12" stroke-linecap="round"/>
+                      <line x1="15" y1="100" x2="185" y2="100" stroke="#9ca3af" stroke-width="12" stroke-linecap="round"/>
+                      <line x1="40" y1="40" x2="160" y2="160" stroke="#9ca3af" stroke-width="8" stroke-linecap="round"/>
+                      <line x1="40" y1="160" x2="160" y2="40" stroke="#9ca3af" stroke-width="8" stroke-linecap="round"/>
+                      <!-- Remates de los radios -->
+                      <circle cx="100" cy="15" r="10" fill="url(#gold-grad)" stroke="#374151" stroke-width="2"/>
+                      <circle cx="100" cy="185" r="10" fill="url(#gold-grad)" stroke="#374151" stroke-width="2"/>
+                      <circle cx="15" cy="100" r="10" fill="url(#gold-grad)" stroke="#374151" stroke-width="2"/>
+                      <circle cx="185" cy="100" r="10" fill="url(#gold-grad)" stroke="#374151" stroke-width="2"/>
+                      <!-- Centro del volante -->
+                      <circle cx="100" cy="100" r="35" fill="linear-gradient(135deg, #374151 0%, #111827 100%)" stroke="#6b7280" stroke-width="3"/>
+                      <circle cx="100" cy="100" r="15" fill="url(#gold-grad)"/>
+                    </svg>
+                  </div>
+
+                  <!-- Luces LED de Validación en la puerta -->
+                  <div class="vault-led-container">
+                    <div id="led-red" class="vault-led"></div>
+                    <div id="led-green" class="vault-led"></div>
+                  </div>
+                </div>
+
+                <!-- Interior de la caja fuerte (Visible al abrirse la puerta) -->
+                <div class="vault-interior">
+                  <div class="vault-interior-glow"></div>
+                  
+                  <!-- Pergamino enrollado de Victoria -->
+                  <div id="victory-scroll" class="scroll-item">
+                    <div class="scroll-roller scroll-roller-top"></div>
+                    <h2>¡Sobre Sagrado Encontrado! 💍💸</h2>
+                    <p>¡Ignacio y Lucía, habéis completado el desafío con éxito!</p>
+                    <p style="margin-top: 15px; font-size: 0.95rem; font-style: italic; color: #782618;">¡El botín real os aguarda! Pedídselo a Pedro o buscad bajo la mesa principal.</p>
+                    <div class="scroll-roller scroll-roller-bottom"></div>
+                  </div>
+                </div>
+
+              </div>
+
+              <!-- Teclado Numérico (Control de la Caja Fuerte) -->
+              <div id="keypad-box" class="keypad-container">
+                <!-- Pantalla del teclado -->
+                <div id="safe-screen" class="keypad-screen">----</div>
+                
+                <!-- Botones numéricos -->
+                <div class="keypad-keys">
+                  <button class="key-btn" data-key="1">1</button>
+                  <button class="key-btn" data-key="2">2</button>
+                  <button class="key-btn" data-key="3">3</button>
+                  <button class="key-btn" data-key="4">4</button>
+                  <button class="key-btn" data-key="5">5</button>
+                  <button class="key-btn" data-key="6">6</button>
+                  <button class="key-btn" data-key="7">7</button>
+                  <button class="key-btn" data-key="8">8</button>
+                  <button class="key-btn" data-key="9">9</button>
+                  <button class="key-btn btn-clear action-btn" data-key="clear">Borrar</button>
+                  <button class="key-btn" data-key="0">0</button>
+                  <button class="key-btn btn-enter action-btn" data-key="enter">Ok</button>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+      </section>
+    </main>
+
+    <!-- PIE DE PÁGINA -->
+    <footer>
+      <p>&copy; 2026 La Búsqueda del Sobre Sagrado - Creado con amor para Ignacio & Lucía.</p>
+    </footer>
+
+  </div>
+
+  <!-- MODAL DEL SISTEMA DE PISTAS -->
+  <div id="hints-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 id="hints-modal-title">Pistas</h4>
+        <button id="hints-modal-close" class="modal-close"><i class="fas fa-times-circle"></i></button>
+      </div>
+      <div class="hints-list">
+        
+        <!-- Pista Nivel 1 -->
+        <div class="hint-box">
+          <button id="hint-btn-lv1" class="hint-trigger-btn">Revelar Pista 1</button>
+          <div id="hint-text-lv1" class="hint-text"></div>
+        </div>
+
+        <!-- Pista Nivel 2 -->
+        <div class="hint-box">
+          <button id="hint-btn-lv2" class="hint-trigger-btn">Revelar Pista 2</button>
+          <div id="hint-text-lv2" class="hint-text"></div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- EASTER EGG MONO (REEMPLAZO DE PISTAS) -->
+  <div id="mono-overlay" class="mono-overlay hidden">
+    <div class="shockwave"></div>
+    <img src="Ignacio&Lucia/Marcianitos/assets/mono.jpeg" alt="Mono Pista" class="mono-img">
+  </div>
+
+  <!-- Controlador lógico principal del juego -->
+  <script src="script.js"></script>
+</body>
+</html>
