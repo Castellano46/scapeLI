@@ -26,6 +26,7 @@ let gameState = {
     elements: { solved: false, digit: "8", currentOrder: ["tierra", "fuego", "aire", "agua"] }
   },
   hintsUsed: 0,
+  finalChallengeSolved: false,
   hintLevelsOpened: {
     riddle: 0,
     study: 0,
@@ -388,6 +389,7 @@ function resetGameData() {
       elements: { solved: false, digit: "8", currentOrder: ["tierra", "fuego", "aire", "agua"] }
     },
     hintsUsed: 0,
+    finalChallengeSolved: false,
     hintLevelsOpened: {
       riddle: 0,
       study: 0,
@@ -407,6 +409,10 @@ function resetGameData() {
   const inputStudy = document.getElementById("study-input-number");
   const btnStudy = document.getElementById("btn-check-study");
   const studyStatus = document.getElementById("study-game-status");
+  const final1 = document.getElementById("final-input-1");
+  const final2 = document.getElementById("final-input-2");
+  const finalChallenge = document.getElementById("final-challenge-container");
+  const finalVictory = document.getElementById("final-victory-message");
 
   if (inputSong) inputSong.value = "";
   if (inputNum) inputNum.value = "";
@@ -422,6 +428,10 @@ function resetGameData() {
     studyStatus.innerHTML = "El casillero está bloqueado. Esperando puntuación de 100 puntos...";
     studyStatus.style.color = "";
   }
+  if (final1) final1.value = "";
+  if (final2) final2.value = "";
+  if (finalChallenge) finalChallenge.style.display = "flex";
+  if (finalVictory) finalVictory.style.display = "none";
 
   // Guardar partida vacía en LocalStorage
   saveGame();
@@ -494,6 +504,17 @@ function renderState() {
 
   if (gameState.isFinished) {
     victoryOverlay.classList.remove("hidden");
+    
+    // Controlar visibilidad del último reto o mensaje final según si ya fue resuelto
+    const finalChallenge = document.getElementById("final-challenge-container");
+    const finalVictory = document.getElementById("final-victory-message");
+    if (gameState.finalChallengeSolved) {
+      if (finalChallenge) finalChallenge.style.display = "none";
+      if (finalVictory) finalVictory.style.display = "flex";
+    } else {
+      if (finalChallenge) finalChallenge.style.display = "flex";
+      if (finalVictory) finalVictory.style.display = "none";
+    }
   } else {
     victoryOverlay.classList.add("hidden");
   }
@@ -1155,6 +1176,36 @@ function verifySafeCode() {
   }
 }
 
+function verifyFinalChallenge() {
+  const input1 = document.getElementById("final-input-1");
+  const input2 = document.getElementById("final-input-2");
+  if (!input1 || !input2) return;
+
+  const val1 = input1.value.trim().toLowerCase();
+  const val2 = input2.value.trim().toLowerCase();
+
+  // Las respuestas correctas deben ser "rossi" y "simoncelli" en cualquier orden
+  const isMatch1 = (val1 === "rossi" && val2 === "simoncelli");
+  const isMatch2 = (val1 === "simoncelli" && val2 === "rossi");
+
+  if (isMatch1 || isMatch2) {
+    playSound("success");
+    startCelebrationFireworks();
+    
+    gameState.finalChallengeSolved = true;
+    saveGame();
+    renderState();
+  } else {
+    playSound("failure");
+    input1.classList.add("shaking");
+    input2.classList.add("shaking");
+    setTimeout(() => {
+      input1.classList.remove("shaking");
+      input2.classList.remove("shaking");
+    }, 500);
+  }
+}
+
 function triggerKeypadError() {
   const keypad = document.getElementById("keypad-box");
   const screen = document.getElementById("safe-screen");
@@ -1670,6 +1721,24 @@ document.addEventListener("DOMContentLoaded", () => {
   if (showVictoryBtn) {
     showVictoryBtn.addEventListener("click", () => {
       document.getElementById("victory-overlay").classList.remove("hidden");
+    });
+  }
+
+  // Último Reto: Rossi y Simoncelli
+  const verifyFinalBtn = document.getElementById("btn-verify-final");
+  if (verifyFinalBtn) {
+    verifyFinalBtn.addEventListener("click", verifyFinalChallenge);
+  }
+  const finalInput1 = document.getElementById("final-input-1");
+  const finalInput2 = document.getElementById("final-input-2");
+  if (finalInput1) {
+    finalInput1.addEventListener("keypress", (e) => {
+      if (e.key === 'Enter') verifyFinalChallenge();
+    });
+  }
+  if (finalInput2) {
+    finalInput2.addEventListener("keypress", (e) => {
+      if (e.key === 'Enter') verifyFinalChallenge();
     });
   }
 

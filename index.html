@@ -41,21 +41,43 @@
 
   <!-- PANTALLA DE VICTORIA (OVERLAY DE CELEBRACIÓN FINAL) -->
   <div id="victory-overlay" class="overlay hidden">
-    <div class="intro-card victory-card">
+    <div class="intro-card victory-card" style="max-width: 650px;">
       <svg class="victory-icon" viewBox="0 0 24 24">
         <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
       </svg>
       <h1 class="victory-title">¡Vivan los Novios! 🥂❤️</h1>
-      <p id="victory-desc-text" class="intro-story">
-        ¡Ignacio y Lucía, habéis demostrado ser la pareja perfecta! Habéis resuelto todos los desafíos y encontrado el Sobre Sagrado.
-      </p>
 
-      <div class="victory-details">
-        <p>Tiempo empleado: <strong id="victory-time">00:00</strong></p>
-        <p>Pistas de Pedro usadas: <strong id="victory-hints">0</strong></p>
+      <!-- Contenedor del Último Reto -->
+      <div id="final-challenge-container" style="display: flex; flex-direction: column; align-items: center; gap: 15px; margin-top: 10px; width: 100%;">
+        <p style="font-size: 1.05rem; color: var(--gold); line-height: 1.6; max-width: 550px; text-align: center; font-style: italic;">
+          "¡Alto ahí! 🛑 Pensabais que la búsqueda terminaba con el cofre abierto, pero Pedro os tiene guardado un último desafío de asfalto y velocidad...<br><br>
+          Debéis buscar y descifrar el significado oculto de los números sagrados de la caja fuerte (46 y 98). ¿Qué dos leyendas se esconden tras ellos?"
+        </p>
+        
+        <div style="display: flex; align-items: center; gap: 12px; justify-content: center; width: 100%; max-width: 500px; margin: 15px 0;">
+          <input type="text" id="final-input-1" class="puzzle-input" placeholder="Leyenda 1..." style="text-align: center; width: 190px; font-size: 0.95rem;" autocomplete="off">
+          <span style="font-family: var(--font-serif); font-size: 1.6rem; color: var(--gold); font-weight: bold; padding: 0 5px;">y</span>
+          <input type="text" id="final-input-2" class="puzzle-input" placeholder="Leyenda 2..." style="text-align: center; width: 190px; font-size: 0.95rem;" autocomplete="off">
+        </div>
+        
+        <button id="btn-verify-final" class="btn-gold" style="padding: 10px 25px; font-size: 0.95rem;">Comprobar Leyendas</button>
       </div>
 
-      <button id="victory-reset-btn" class="btn-gold">Jugar de Nuevo</button>
+      <!-- Mensaje Final (Inicialmente oculto) -->
+      <div id="final-victory-message" style="display: none; flex-direction: column; align-items: center; gap: 20px; width: 100%;">
+        <h2 style="font-family: var(--font-serif); color: var(--gold); font-size: 1.8rem; text-shadow: 0 0 10px var(--gold-glow); margin-bottom: 5px;">¡Aventura Completada con Éxito! 🏁🏆</h2>
+        <p class="intro-story" style="max-width: 550px; text-align: center; margin-bottom: 10px;">
+          ¡Impresionante! Habéis descifrado la conexión. El mítico 46 de Valentino Rossi y el recordado Marco Simoncelli (58 / 98-año de su debut o conexión). Vuestra complicidad y destreza no tienen límites.<br><br>
+          Ahora sí, el Sobre Sagrado y el botín definitivo os pertenecen. ¡Que disfrutéis de vuestra boda y seáis inmensamente felices! 🥂💍
+        </p>
+        
+        <div class="victory-details" style="width: 100%; max-width: 400px; margin-bottom: 15px;">
+          <p>Tiempo empleado: <strong id="victory-time">00:00</strong></p>
+          <p>Pistas de Pedro usadas: <strong id="victory-hints">0</strong></p>
+        </div>
+
+        <button id="victory-reset-btn" class="btn-gold">Jugar de Nuevo</button>
+      </div>
     </div>
   </div>
 
