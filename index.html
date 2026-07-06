@@ -14,21 +14,20 @@
   <!-- PANTALLA DE INTRODUCCIÓN (OVERLAY INICIAL) -->
   <div id="intro-overlay" class="overlay">
     <div class="intro-card">
-      <h1>La Búsqueda del Sobre Sagrado 💍💸</h1>
+      <h1>En Busca del Sobre Perdido✉️💸</h1>
       <p class="intro-story">
-        "Tras sobrevivir a la ceremonia, esquivar las lágrimas de emoción y resistir la tentación de arrasar la barra libre antes de tiempo, os enfrentáis al reto más importante del día.<br><br>
-        Cuenta la leyenda que, en algún rincón de este lugar, se oculta el <span class="sobre-sagrado-glow">Sobre Sagrado ✉️✨</span>. Durante generaciones, muchos han intentado encontrarlo, pero solo los elegidos lograrán descubrir su paradero.<br><br>
-        Un misterioso sobre que contiene la legendaria dádiva ha desaparecido. Las malas lenguas cuentan y afirman que fue escondido en las mismísimas entrañas de esta morada por mentes tan infames (como la de vuestro querido Pedro, empeñado en haceros sudar un poco antes de daros el regalo) y solo podrá ser descubierto por una intrépida y astuta pareja.<br><br>
+        "Tras sobrevivir a la ceremonia, esquivar las lágrimas de emoción y arrasar la barra libre, os enfrentáis al reto más importante.<br><br>
+        Cuenta la leyenda que, en algún rincón de este lugar, se oculta el <span class="sobre-sagrado-glow">Sobre Sagrado ✉️✨</span>.<br><br>
+        Debereis agudizar vuestro ingenio y aventuraros a encontrar el sobre que contiene la legendaria dádiva desaparecida. Las malas lenguas cuentan y afirman que fue escondido en las mismísimas entrañas de esta morada por mentes tan infames (como las de Pedro y Mari, empeñados en haceros sudar un poco antes de daros el regalo) y solo podrá ser descubierto por una intrépida y astuta pareja.<br><br>
         Para recuperarlo, deberéis superar acertijos, resolver pruebas y seguir las pistas que os conducirán hasta su escondite. Cada desafío os acercará un paso más al tesoro.<br><br>
         Reunid vuestro ingenio y haceos merecedores de dicho botín.<br><br>
-        Pero cuidado... el tiempo corre y solo el equipo de los elegidos podrá alzarse con la gloria.<br><br>
         La búsqueda comienza ahora."
       </p>
       
       <div class="intro-instructions">
         <h3>Instrucciones de la Búsqueda:</h3>
         <ul>
-          <li>Explorad los 4 rincones del banquete interactuando con el menú lateral.</li>
+          <li>Explorad las 4 Salas interactuando con el menú lateral.</li>
           <li>Resolved cada acertijo para conseguir uno de los dígitos de la combinación.</li>
           <li>Podéis usar el sistema de pistas si os quedáis atascados.</li>
           <li>Introducid los 4 dígitos en el cofre final para revelar el Sobre Sagrado.</li>
@@ -50,32 +49,27 @@
       <!-- Contenedor del Último Reto -->
       <div id="final-challenge-container" style="display: flex; flex-direction: column; align-items: center; gap: 15px; margin-top: 10px; width: 100%;">
         <p style="font-size: 1.05rem; color: var(--gold); line-height: 1.6; max-width: 550px; text-align: center; font-style: italic;">
-          "¡Alto ahí! 🛑 Pensabais que la búsqueda terminaba con el cofre abierto, pero Pedro os tiene guardado un último desafío de asfalto y velocidad...<br><br>
-          Debéis buscar y descifrar el significado oculto de los números sagrados de la caja fuerte (46 y 98). ¿Qué dos leyendas se esconden tras ellos?"
+          "¡Alto ahí! 🛑 Pensabais que la búsqueda terminaba con el cofre abierto, pero os tenemos guardado un último desafío de asfalto y velocidad...<br><br>
+          Debéis buscar y descifrar el significado oculto de los números sagrados de la caja fuerte (4658). ¿Qué puede esconderse tras ellos?"
         </p>
         
         <div style="display: flex; align-items: center; gap: 12px; justify-content: center; width: 100%; max-width: 500px; margin: 15px 0;">
-          <input type="text" id="final-input-1" class="puzzle-input" placeholder="Leyenda 1..." style="text-align: center; width: 190px; font-size: 0.95rem; text-transform: uppercase;" autocomplete="off">
+          <input type="text" id="final-input-1" class="puzzle-input" placeholder="Pensad..." style="text-align: center; width: 190px; font-size: 0.95rem; text-transform: uppercase;" autocomplete="off">
           <span style="font-family: var(--font-serif); font-size: 1.6rem; color: var(--gold); font-weight: bold; padding: 0 5px;">y</span>
-          <input type="text" id="final-input-2" class="puzzle-input" placeholder="Leyenda 2..." style="text-align: center; width: 190px; font-size: 0.95rem; text-transform: uppercase;" autocomplete="off">
+          <input type="text" id="final-input-2" class="puzzle-input" placeholder="Pensad..." style="text-align: center; width: 190px; font-size: 0.95rem; text-transform: uppercase;" autocomplete="off">
         </div>
         
-        <button id="btn-verify-final" class="btn-gold" style="padding: 10px 25px; font-size: 0.95rem;">Comprobar Leyendas</button>
+        <button id="btn-verify-final" class="btn-gold" style="padding: 10px 25px; font-size: 0.95rem;">Comprobar</button>
       </div>
 
       <!-- Mensaje Final (Inicialmente oculto) -->
       <div id="final-victory-message" style="display: none; flex-direction: column; align-items: center; gap: 20px; width: 100%;">
         <h2 style="font-family: var(--font-serif); color: var(--gold); font-size: 1.8rem; text-shadow: 0 0 10px var(--gold-glow); margin-bottom: 5px;">¡Aventura Completada con Éxito! 🏁🏆</h2>
         <p class="intro-story" style="max-width: 550px; text-align: center; margin-bottom: 10px;">
-          ¡Impresionante! Habéis descifrado la conexión. El mítico 46 de Valentino Rossi y el recordado Marco Simoncelli (58 / 98-año de su debut o conexión). Vuestra complicidad y destreza no tienen límites.<br><br>
-          Ahora sí, el Sobre Sagrado y el botín definitivo os pertenecen. ¡Que disfrutéis de vuestra boda y seáis inmensamente felices! 🥂💍
+          ¡Impresionante! Habéis descifrado la conexión. El mítico 46 de Valentino Rossi y el recordado Marco Simoncelli (su legendario dorsal 58). Vuestra complicidad y destreza no tienen límites.<br><br>
+          Ahora sí, el Sobre Sagrado y la Dávida perdida os pertenecen. ¡Que disfrutéis cada día y seáis inmensamente felices! 🥂💍
         </p>
         
-        <div class="victory-details" style="width: 100%; max-width: 400px; margin-bottom: 15px;">
-          <p>Tiempo empleado: <strong id="victory-time">00:00</strong></p>
-          <p>Pistas de Pedro usadas: <strong id="victory-hints">0</strong></p>
-        </div>
-
         <button id="victory-reset-btn" class="btn-gold">Jugar de Nuevo</button>
       </div>
     </div>
@@ -106,9 +100,9 @@
 
       <!-- Controles de tiempo, sonido y reinicio -->
       <div class="header-controls">
-        <div class="timer-box">
+        <div class="timer-box" style="display: none;">
           <i class="far fa-clock"></i>
-          <span id="timer-display">30:00</span>
+          <span id="timer-display">00:00</span>
         </div>
         <button id="sound-toggle" class="header-btn" title="Activar/Silenciar sonido">
           <i class="fas fa-volume-mute"></i>
@@ -129,7 +123,7 @@
         <button id="nav-riddle" class="nav-btn active">
           <div class="nav-btn-info">
             <span class="nav-btn-title">Sala I: El Acertijo</span>
-            <span class="nav-btn-desc">Acertijo de los novios</span>
+            <span class="nav-btn-desc">Acertijo Musical</span>
           </div>
           <span class="nav-status"><i class="fas fa-lock"></i></span>
         </button>
@@ -176,8 +170,8 @@
         <div id="pane-riddle" class="puzzle-pane active">
           <div class="puzzle-header">
             <div class="puzzle-title">
-              <h3>Prueba I: El Acertijo del Amor</h3>
-              <p>Escuchad la melodía nupcial para descubrir el primer número del cofre.</p>
+              <h3>Prueba I: El Acertijo Musical</h3>
+              <p>Escuchad la melodía para descubrir el primer número.</p>
             </div>
             <button id="hint-btn-riddle" class="hints-btn"><i class="far fa-lightbulb"></i> Pista</button>
           </div>
@@ -186,10 +180,10 @@
             <!-- UI Activa -->
             <div id="riddle-active-ui" style="display: flex; flex-direction: column; align-items: center; gap: 20px; width: 100%;">
               <div class="riddle-scroll">
-                "Para abrir el primer cerrojo, debéis afinar vuestro oído.<br>
-                Escuchad la melodía que acompaña a los enamorados en su día especial.<br><br>
-                <strong>Paso 1:</strong> Identificad el nombre original de la obra en inglés.<br>
-                <strong>Paso 2:</strong> Una vez descubierta... ¿qué número sagrado oculta en su estructura?"
+                "Para abrir el primer candado, debéis afinar vuestro oído.<br>
+                Escuchad la siguiente pieza musical y...<br><br>
+                <strong>Paso 1:</strong> Identificad el nombre original de la obra.<br>
+                <strong>Paso 2:</strong> Una vez descubierta... ¿qué número puede ocultarse en su estructura?"
               </div>
               
               <!-- Reproductor de audio romántico -->
@@ -216,7 +210,7 @@
               <div id="riddle-step2-container" class="riddle-input-container" style="display: none; flex-direction: column; align-items: center; gap: 15px; width: 100%;">
                 <p style="color: var(--gold); font-size: 0.95rem; text-align: center; font-weight: bold; margin-bottom: 5px;">
                   ¡Melodía identificada! "Canon in D" resuena en el aire.<br>
-                  Ahora, deducid el número sagrado oculto en su título original y escribidlo abajo.
+                  Ahora, deducid el número oculto en su título original y escribidlo abajo. Pista: B=2, H=8...
                 </p>
                 <div style="display: flex; gap: 15px; width: 100%; max-width: 500px;">
                   <input type="text" id="riddle-input-number" class="puzzle-input" placeholder="ESCRIBE EL NÚMERO SAGRADO..." autocomplete="off">
@@ -228,7 +222,7 @@
             <!-- UI Resuelto -->
             <div id="riddle-solved-ui" class="puzzle-solved-indicator">
               <h4>¡Acertijo Resuelto!</h4>
-              <p>El pergamino nupcial brilla revelando el primer dígito de la combinación (D = 4):</p>
+              <p></p>
               <div class="unlocked-digit-reveal">4</div>
             </div>
           </div>
@@ -239,7 +233,7 @@
           <div class="puzzle-header">
             <div class="puzzle-title">
               <h3>Prueba II: El Reto de Maya Invaders</h3>
-              <p>Demostrad vuestra destreza en los videojuegos de los novios para conseguir el segundo dígito.</p>
+              <p>Demostrad vuestra destreza en los videojuegos para conseguir el segundo dígito.</p>
             </div>
             <button id="hint-btn-study" class="hints-btn"><i class="far fa-lightbulb"></i> Pista</button>
           </div>
@@ -248,8 +242,8 @@
             <!-- UI Activa -->
             <div id="study-active-ui" style="display: flex; flex-direction: column; align-items: center; gap: 20px; width: 100%;">
               <div class="riddle-scroll">
-                "Para obtener el segundo dígito, deberéis demostrar vuestra complicidad en los marcianitos.<br><br>
-                Haced clic en el botón de abajo para iniciar el juego <strong>Maya Invaders ❤️</strong> y lograd alcanzar una puntuación mínima de <strong>100 puntos</strong>.<br><br>
+                "Para obtener el segundo dígito, deberéis demostrar vuestra habilidad en los marcianitos.<br><br>
+                Haced clic en el botón de abajo para iniciar el juego <strong>Maya Invaders ❤️</strong> y lograd alcanzar una puntuación de <strong>2000 puntos</strong>.<br><br>
                 Una vez consigáis la puntuación, el panel de abajo se activará automáticamente y os permitirá registrar el número sagrado."
               </div>
 
@@ -271,8 +265,8 @@
             <!-- UI Resuelto -->
             <div id="study-solved-ui" class="puzzle-solved-indicator">
               <h4>¡Reto Superado!</h4>
-              <p>¡Puntuación de 100 puntos alcanzada en Maya Invaders! El segundo dígito es:</p>
-              <div class="unlocked-digit-reveal">6</div>
+              <p></p>
+              <div class="unlocked-digit-reveal">8</div>
             </div>
           </div>
         </div>
@@ -337,7 +331,7 @@
               <!-- Texto Cifrado y su traducción -->
               <div class="encrypted-box">
                 <div class="encrypted-label">Grabado en las Alianzas:</div>
-                <div class="encrypted-text">HOW HUFHU GLJLWR HV HO QXHYH</div>
+                <div class="encrypted-text">HO WHUFHU GLJLWR HV HO VHLV</div>
                 <div class="encrypted-label" style="margin-top: 15px;">Mensaje Descifrado:</div>
                 <div id="decrypted-text" class="decrypted-text-display">...</div>
               </div>
@@ -349,7 +343,7 @@
             <div id="caesar-solved-ui" class="puzzle-solved-indicator">
               <h4>¡Mensaje Decodificado!</h4>
               <p>El grabado nupcial revela con destellos el tercer dígito de la combinación:</p>
-              <div class="unlocked-digit-reveal">9</div>
+              <div class="unlocked-digit-reveal">6</div>
             </div>
           </div>
         </div>
@@ -383,7 +377,7 @@
             <div id="elements-solved-ui" class="puzzle-solved-indicator">
               <h4>¡Pilares Alineados!</h4>
               <p>Las runas del matrimonio brillan entregando el último dígito:</p>
-              <div class="unlocked-digit-reveal">8</div>
+              <div class="unlocked-digit-reveal">5</div>
             </div>
           </div>
         </div>
@@ -393,7 +387,7 @@
           <div class="puzzle-header">
             <div class="puzzle-title">
               <h3>El Cofre del Sobre Sagrado</h3>
-              <p>Reunid los cuatro dígitos descubiertos en las pruebas e introducidlos en el panel táctil.</p>
+              <p>Reunidos los cuatro dígitos descubiertos en las pruebas deberéis introducidlos en el panel con un orden concreto.</p>
             </div>
           </div>
 
@@ -447,7 +441,7 @@
                     <div class="scroll-roller scroll-roller-top"></div>
                     <h2>¡Sobre Sagrado Encontrado! 💍💸</h2>
                     <p>¡Ignacio y Lucía, habéis completado el desafío con éxito!</p>
-                    <p style="margin-top: 15px; font-size: 0.95rem; font-style: italic; color: #782618;">¡El botín real os aguarda! Pedídselo a Pedro o buscad bajo la mesa principal.</p>
+                    <p style="margin-top: 15px; font-size: 0.95rem; font-style: italic; color: #782618;">¡El botín real os aguarda! Pulsar el botón para recogerlo.</p>
                     <button id="btn-show-victory" class="btn-gold" style="margin-top: 15px; font-size: 0.9rem; padding: 10px 20px; border-radius: 6px; cursor: pointer;">Finalizar Aventura</button>
                     <div class="scroll-roller scroll-roller-bottom"></div>
                   </div>

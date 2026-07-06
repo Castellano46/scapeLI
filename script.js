@@ -5,7 +5,7 @@
 
 // Configuración general del juego
 const GAME_CONFIG = {
-  correctCombination: "4698",
+  correctCombination: "4658",
   initialTimeSeconds: 1800, // 30 minutos
   caesarShiftTarget: 3,
   elementsOrderTarget: ["fuego", "agua", "tierra", "aire"],
@@ -14,16 +14,16 @@ const GAME_CONFIG = {
 
 // Estado del juego
 let gameState = {
-  timeRemaining: GAME_CONFIG.initialTimeSeconds,
+  timeRemaining: 0,
   isPlaying: false,
   isFinished: false,
   currentRoom: "intro", // intro, riddle, study, caesar, elements, safe, victory
   soundEnabled: false,
   puzzles: {
     riddle: { solved: false, digit: "4", songGuessed: false },
-    study: { solved: false, digit: "6" },
-    caesar: { solved: false, digit: "9", currentShift: 0 },
-    elements: { solved: false, digit: "8", currentOrder: ["tierra", "fuego", "aire", "agua"] }
+    study: { solved: false, digit: "8" },
+    caesar: { solved: false, digit: "6", currentShift: 0 },
+    elements: { solved: false, digit: "5", currentOrder: ["tierra", "fuego", "aire", "agua"] }
   },
   hintsUsed: 0,
   finalChallengeSolved: false,
@@ -315,11 +315,8 @@ function startTimer() {
   if (timerInterval) clearInterval(timerInterval);
   timerInterval = setInterval(() => {
     if (gameState.isPlaying && !gameState.isFinished) {
-      gameState.timeRemaining--;
+      gameState.timeRemaining++;
       updateTimerDisplay();
-      if (gameState.timeRemaining <= 0) {
-        gameOver();
-      }
     }
   }, 1000);
 }
@@ -377,16 +374,16 @@ function loadGame() {
 // Reiniciar partida
 function resetGameData() {
   gameState = {
-    timeRemaining: GAME_CONFIG.initialTimeSeconds,
+    timeRemaining: 0,
     isPlaying: false,
     isFinished: false,
     currentRoom: "intro", // intro, riddle, study, caesar, elements, safe, victory
     soundEnabled: false,
     puzzles: {
       riddle: { solved: false, digit: "4", songGuessed: false },
-      study: { solved: false, digit: "6" },
-      caesar: { solved: false, digit: "9", currentShift: 0 },
-      elements: { solved: false, digit: "8", currentOrder: ["tierra", "fuego", "aire", "agua"] }
+      study: { solved: false, digit: "8" },
+      caesar: { solved: false, digit: "6", currentShift: 0 },
+      elements: { solved: false, digit: "5", currentOrder: ["tierra", "fuego", "aire", "agua"] }
     },
     hintsUsed: 0,
     finalChallengeSolved: false,
@@ -491,6 +488,7 @@ function renderState() {
   updateNavButtonState("nav-study", gameState.puzzles.study.solved, gameState.puzzles.study.digit);
   updateNavButtonState("nav-caesar", gameState.puzzles.caesar.solved, gameState.puzzles.caesar.digit);
   updateNavButtonState("nav-elements", gameState.puzzles.elements.solved, gameState.puzzles.elements.digit);
+  updateNavButtonState("nav-safe", gameState.finalChallengeSolved, "");
 
   // Ocultar / Mostrar overlays según estado
   const introOverlay = document.getElementById("intro-overlay");
@@ -535,22 +533,122 @@ function updateNavButtonState(id, solved, digit) {
   const btn = document.getElementById(id);
   if (btn) {
     const statusSpan = btn.querySelector(".nav-status");
-    if (solved) {
-      btn.classList.add("solved-state");
-      if (statusSpan) statusSpan.innerHTML = `<i class="fas fa-check-circle"></i>`;
-      btn.querySelector(".nav-btn-desc").textContent = `Dígito obtenido: ${digit}`;
-    } else {
+    const roomName = id.replace("nav-", "");
+    const locked = isRoomLocked(roomName);
+    
+    if (locked) {
+      btn.classList.add("locked-nav");
       btn.classList.remove("solved-state");
-      if (statusSpan) statusSpan.innerHTML = `<i class="fas fa-lock"></i>`;
+      if (statusSpan) {
+        statusSpan.innerHTML = `<i class="fas fa-lock" style="color: var(--text-dim);"></i>`;
+        statusSpan.style.borderColor = "var(--text-dim)";
+      }
       
-      let desc = "Sin resolver";
-      if (id === "nav-riddle") desc = "Acertijo de los novios";
-      if (id === "nav-study") desc = "Reto Maya Invaders";
-      if (id === "nav-caesar") desc = "Descifrar el mensaje";
-      if (id === "nav-elements") desc = "Alineación de pilares";
+      let desc = "Sala bloqueada";
+      if (roomName === "safe") desc = "Cofre sellado";
       btn.querySelector(".nav-btn-desc").textContent = desc;
+    } else {
+      btn.classList.remove("locked-nav");
+      
+      if (solved) {
+        btn.classList.add("solved-state");
+        if (statusSpan) {
+          statusSpan.innerHTML = `<i class="fas fa-check-circle" style="color: var(--green-success);"></i>`;
+          statusSpan.style.borderColor = "";
+        }
+        
+        let desc = `Dígito obtenido: ${digit}`;
+        if (roomName === "safe") desc = "¡Cofre abierto!";
+        btn.querySelector(".nav-btn-desc").textContent = desc;
+      } else {
+        btn.classList.remove("solved-state");
+        if (statusSpan) {
+          if (roomName === "safe") {
+            statusSpan.innerHTML = `<i class="fas fa-envelope-open-text" style="color: var(--gold);"></i>`;
+            statusSpan.style.borderColor = "var(--gold)";
+          } else {
+            statusSpan.innerHTML = `<i class="fas fa-lock-open" style="color: var(--gold);"></i>`;
+            statusSpan.style.borderColor = "var(--gold)";
+          }
+        }
+        
+        let desc = "Sin resolver";
+        if (id === "nav-riddle") desc = "Acertijo de los novios";
+        if (id === "nav-study") desc = "Reto Maya Invaders";
+        if (id === "nav-caesar") desc = "Descifrar el mensaje";
+        if (id === "nav-elements") desc = "Alineación de pilares";
+        if (id === "nav-safe") desc = "Listo para abrir";
+        btn.querySelector(".nav-btn-desc").textContent = desc;
+      }
     }
   }
+}
+
+// Verificar si una sala está bloqueada
+function isRoomLocked(roomName) {
+  if (!gameState || !gameState.puzzles) return false;
+  if (roomName === "intro" || roomName === "riddle") return false;
+  
+  if (roomName === "study") {
+    return !gameState.puzzles.riddle.solved;
+  }
+  if (roomName === "caesar") {
+    return !gameState.puzzles.riddle.solved || !gameState.puzzles.study.solved;
+  }
+  if (roomName === "elements") {
+    return !gameState.puzzles.riddle.solved || !gameState.puzzles.study.solved || !gameState.puzzles.caesar.solved;
+  }
+  if (roomName === "safe") {
+    return !gameState.puzzles.riddle.solved || 
+           !gameState.puzzles.study.solved || 
+           !gameState.puzzles.caesar.solved || 
+           !gameState.puzzles.elements.solved;
+  }
+  return false;
+}
+
+// Sistema de Notificaciones flotantes (Toast)
+function showToast(message, type = "error") {
+  // Asegurar que existe el contenedor en el DOM
+  let container = document.getElementById("toast-container");
+  if (!container) {
+    container = document.createElement("div");
+    container.id = "toast-container";
+    container.className = "toast-container";
+    document.body.appendChild(container);
+  }
+
+  // Crear el elemento toast
+  const toast = document.createElement("div");
+  toast.className = `toast ${type}`;
+  
+  // Icono según el tipo
+  let iconClass = "fa-exclamation-circle";
+  if (type === "success") iconClass = "fa-check-circle";
+  if (type === "info") iconClass = "fa-info-circle";
+  
+  toast.innerHTML = `
+    <i class="fas ${iconClass}"></i>
+    <span>${message}</span>
+  `;
+  
+  container.appendChild(toast);
+  
+  // Pequeño timeout para permitir que la animación CSS se ejecute tras insertar en el DOM
+  setTimeout(() => {
+    toast.classList.add("show");
+  }, 10);
+  
+  // Auto-eliminar después de 3.5 segundos
+  setTimeout(() => {
+    toast.classList.remove("show");
+    // Esperar a que termine la animación de salida para eliminar del DOM
+    setTimeout(() => {
+      if (toast.parentNode) {
+        toast.parentNode.removeChild(toast);
+      }
+    }, 400);
+  }, 3500);
 }
 
 // Navegación entre salas
@@ -777,7 +875,7 @@ function checkStudyNumber() {
   if (!input) return;
   const answer = input.value.trim();
   
-  if (answer === "6" || answer.toUpperCase() === "SEIS") {
+  if (answer === "8" || answer.toUpperCase() === "OCHO") {
     playSound("success");
     gameState.puzzles.study.solved = true;
     saveGame();
@@ -1163,7 +1261,7 @@ function verifySafeCode() {
         if (scroll) scroll.classList.add("unfolded");
         
         // Rellenar estadísticas de victoria
-        const timeElapsedSec = GAME_CONFIG.initialTimeSeconds - gameState.timeRemaining;
+        const timeElapsedSec = gameState.timeRemaining;
         const minutes = Math.floor(timeElapsedSec / 60);
         const seconds = timeElapsedSec % 60;
         
@@ -1611,7 +1709,7 @@ function restartAdventure() {
   if (confirm("¿Estás seguro de que deseas reiniciar toda la aventura? Se perderá tu progreso actual.")) {
     stopFireworks();
     resetGameData();
-    renderState();
+    location.reload();
   }
 }
 
@@ -1635,11 +1733,45 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("reset-btn").addEventListener("click", restartAdventure);
   
   // Navegación lateral
-  document.getElementById("nav-riddle").addEventListener("click", () => switchRoom("riddle"));
-  document.getElementById("nav-study").addEventListener("click", () => switchRoom("study"));
-  document.getElementById("nav-caesar").addEventListener("click", () => switchRoom("caesar"));
-  document.getElementById("nav-elements").addEventListener("click", () => switchRoom("elements"));
-  document.getElementById("nav-safe").addEventListener("click", () => switchRoom("safe"));
+  const roomButtons = [
+    { id: "nav-riddle", room: "riddle" },
+    { id: "nav-study", room: "study" },
+    { id: "nav-caesar", room: "caesar" },
+    { id: "nav-elements", room: "elements" },
+    { id: "nav-safe", room: "safe" }
+  ];
+
+  roomButtons.forEach(btnInfo => {
+    const btn = document.getElementById(btnInfo.id);
+    if (btn) {
+      btn.addEventListener("click", () => {
+        if (isRoomLocked(btnInfo.room)) {
+          playSound("failure");
+          
+          let message = "";
+          if (btnInfo.room === "safe") {
+            message = "¡Objetivo bloqueado! Debes resolver todas las salas anteriores.";
+          } else {
+            let prevRoomName = "";
+            if (btnInfo.room === "study") prevRoomName = "la Sala I (El Acertijo)";
+            if (btnInfo.room === "caesar") prevRoomName = "la Sala II (Marcianitos)";
+            if (btnInfo.room === "elements") prevRoomName = "la Sala III (El Mensaje)";
+            message = `¡Sala bloqueada! Resuelve primero ${prevRoomName}.`;
+          }
+          
+          showToast(message, "error");
+          
+          // Efecto de vibración
+          btn.classList.add("shake-nav");
+          setTimeout(() => {
+            btn.classList.remove("shake-nav");
+          }, 400);
+        } else {
+          switchRoom(btnInfo.room);
+        }
+      });
+    }
+  });
 
   // Prueba 1
   const checkSongBtn = document.getElementById("btn-check-song");

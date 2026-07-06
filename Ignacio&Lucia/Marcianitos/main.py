@@ -682,7 +682,7 @@ class Game:
     """Central engine managing scene logic, frame rendering, ticks, and state transitions."""
     def __init__(self):
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-        pygame.display.set_caption("Marcianitos de San Valentín ❤️ Cupid Attack")
+        pygame.display.set_caption("Maya Invaders ❤️")
         self.clock = pygame.time.Clock()
         
         self.focus_brought = False
@@ -728,8 +728,7 @@ class Game:
         
         # Chest event buttons and flags
         self.chest_event_triggered = False
-        self.btn_chest_continue = MenuButton("CONTINUAR", 200, 50, (SCREEN_WIDTH // 2 - 120, SCREEN_HEIGHT // 2 + 40), color=COLOR_RED, hover_color=COLOR_PINK)
-        self.btn_chest_exit = MenuButton("SALIR", 200, 50, (SCREEN_WIDTH // 2 + 120, SCREEN_HEIGHT // 2 + 40), color=(150, 60, 80), hover_color=(200, 100, 120))
+        self.btn_chest_exit = MenuButton("SALIR", 200, 50, (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 40), color=(150, 60, 80), hover_color=(200, 100, 120))
         
         self.player = None
         self.start_music = True
@@ -785,10 +784,7 @@ class Game:
                         self.state = "MENU"
                         
                 elif self.state == "CHEST_EVENT":
-                    if self.btn_chest_continue.rect.collidepoint(mouse_pos):
-                        self.state = "PLAYING"
-                        self.sounds.play_sound("shoot")
-                    elif self.btn_chest_exit.rect.collidepoint(mouse_pos):
+                    if self.btn_chest_exit.rect.collidepoint(mouse_pos):
                         return False
                         
             if event.type == pygame.KEYDOWN:
@@ -863,26 +859,12 @@ class Game:
 
     def adjust_difficulty(self):
         """Dynamic game challenge adjuster based on score."""
-        # 0-100: baseline speed
-        if self.score < 100:
-            self.enemy_speed_multiplier = 1.0
-            self.enemy_spawn_cooldown = 1500
-            self.bullet_speed = 8
-        # 100-250: speed +20%
-        elif self.score < 250:
-            self.enemy_speed_multiplier = 1.2
-            self.enemy_spawn_cooldown = 1200
-            self.bullet_speed = 9
-        # 250-500: speed +40%
-        elif self.score < 500:
-            self.enemy_speed_multiplier = 1.4
-            self.enemy_spawn_cooldown = 1000
-            self.bullet_speed = 10
-        # 500+: speed +60%
-        else:
-            self.enemy_speed_multiplier = 1.6
-            self.enemy_spawn_cooldown = 800
-            self.bullet_speed = 11
+        # Aumentar dificultad de 10 en 10 puntos progresivamente
+        levels = self.score // 10
+        
+        self.enemy_speed_multiplier = 1.0 + (levels * 0.02)
+        self.enemy_spawn_cooldown = max(400, 1500 - (levels * 30))
+        self.bullet_speed = min(14, 8 + (levels * 0.1))
 
     def trigger_enemy_explosion(self, enemy):
         """Creates colorful exploding particles on contact points."""
@@ -958,7 +940,6 @@ class Game:
             self.btn_back.update(mouse_pos)
             
         elif self.state == "CHEST_EVENT":
-            self.btn_chest_continue.update(mouse_pos)
             self.btn_chest_exit.update(mouse_pos)
             
         elif self.state == "PLAYING":
@@ -1061,10 +1042,10 @@ class Game:
         pygame.draw.rect(self.screen, COLOR_WHITE, panel_rect, width=3, border_radius=15)
         
         # Warning label
-        UIHelper.draw_text(self.screen, "Si quieres abrir el cofre necesitas una fecha", 24, COLOR_WHITE, (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 - 40), font_style="georgia")
+        UIHelper.draw_text(self.screen, "Vaya vaya vaya.... parece que se os da bien este juego.", 20, COLOR_WHITE, (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 - 50), font_style="georgia")
+        UIHelper.draw_text(self.screen, "Vuestro número es el 8", 24, COLOR_GOLD, (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 - 10), font_style="georgia")
         
         # Action buttons
-        self.btn_chest_continue.draw(self.screen)
         self.btn_chest_exit.draw(self.screen)
 
     def draw_enter_name_screen(self):
@@ -1102,7 +1083,7 @@ class Game:
         title_y = 160 + pulse
         
         UIHelper.draw_text(self.screen, "MARCIANITOS", 72, COLOR_PINK, (SCREEN_WIDTH // 2, title_y), font_style="georgia", shadow_color=(200, 80, 100))
-        UIHelper.draw_text(self.screen, "DE SAN VALENTÍN", 48, COLOR_TEXT_DARK, (SCREEN_WIDTH // 2, title_y + 70), font_style="georgia", shadow_color=(220, 205, 185))
+        UIHelper.draw_text(self.screen, "Maya Attacks!", 48, COLOR_TEXT_DARK, (SCREEN_WIDTH // 2, title_y + 70), font_style="georgia", shadow_color=(220, 205, 185))
         
         # High Score banner
         best_score = self.score_mgr.get_best_score()
@@ -1131,7 +1112,7 @@ class Game:
         UIHelper.draw_text(self.screen, f"BEST: {best_display}", 20, COLOR_GOLD_DARK, (SCREEN_WIDTH // 2, 25), font_style="segoe ui")
         
         # Draw Difficulty Multiplier level indicator
-        diff_text = f"DIFFICULTY: {int(self.enemy_speed_multiplier * 100)}%"
+        diff_text = f"DIFFICULTY: {int((self.enemy_speed_multiplier - 1.0) * 100)}%"
         UIHelper.draw_text(self.screen, diff_text, 18, COLOR_TEXT_MUTED, (SCREEN_WIDTH - 320, 25), font_style="segoe ui")
         
         # Lives represented as little pulsing red hearts

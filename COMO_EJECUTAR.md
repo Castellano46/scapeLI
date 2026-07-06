@@ -54,18 +54,18 @@ Una vez que el servidor esté encendido:
 2. **Sala II (Marcianitos):**
    - Pulsa sobre **"Jugar a Maya Invaders"** para abrir el juego en tu pantalla.
    - Juega hasta alcanzar un mínimo de **100 puntos**. La puntuación se registrará automáticamente en vivo.
-   - Vuelve a la web, donde el casillero se habrá desbloqueado solo. Introduce el dígito **6** (o escribe *"SEIS"*).
+   - Vuelve a la web, donde el casillero se habrá desbloqueado solo. Introduce el dígito **8** (o escribe *"OCHO"*).
 3. **Sala III (Descifrador César):**
    - Gira la rueda césar hasta un desplazamiento de `+3` y descifra el texto para obtener la pista del tercer dígito.
-   - El dígito correcto a introducir es el **9**.
+   - El dígito correcto a introducir es el **6**.
 4. **Sala IV (Pilares del Matrimonio):**
    - Ordena los cuatro pilares según las runas en el orden correcto: **Fuego (Rojo) ➔ Agua (Azul) ➔ Tierra (Verde) ➔ Aire (Gris)**.
-   - El dígito correcto a introducir es el **8**.
+   - El dígito correcto a introducir es el **5**.
 5. **Caja Fuerte (Código Final):**
-   - Introduce el código **`4698`** (puedes usar el teclado físico o hacer clic en los botones) y pulsa **Ok**.
-   - El cofre se abrirá y revelará el pergamino de victoria. Pulsa **"Finalizar Aventura"** para acceder al último reto.
+   - Introduce el código **`4658`** (puedes usar el teclado físico o hacer clic en los botones) y pulsa **Ok**.
+   - El cofre se abrirá y revelará el pergamino de victoria. Pulsar **"Finalizar Aventura"** para acceder al último reto.
 6. **Último Reto:**
-   - Escribe en mayúsculas las leyendas detrás de los números 46 y 98 de la caja fuerte: **`ROSSI`** y **`SIMONCELLI`** (en cualquier orden). ¡Y habrás terminado!
+   - Escribe en mayúsculas las leyendas detrás de los números 46 y 58 de la caja fuerte: **`ROSSI`** y **`SIMONCELLI`** (en cualquier orden). ¡Y habrás terminado!
 
 ---
 
