@@ -138,8 +138,8 @@
 
         <button id="nav-caesar" class="nav-btn">
           <div class="nav-btn-info">
-            <span class="nav-btn-title">Sala III: El Mensaje</span>
-            <span class="nav-btn-desc">Descifrar código secreto</span>
+            <span class="nav-btn-title">Sala III: La Pirámide</span>
+            <span class="nav-btn-desc">Invertir las monedas</span>
           </div>
           <span class="nav-status"><i class="fas fa-lock"></i></span>
         </button>
@@ -272,77 +272,41 @@
         </div>
 
         <!-- PRUEBA 3: CÓDIGO SECRETO (DECIFRADOR CÉSAR) -->
+        <!-- PRUEBA 3: LA PIRÁMIDE DE MONEDAS -->
         <div id="pane-caesar" class="puzzle-pane">
           <div class="puzzle-header">
             <div class="puzzle-title">
-              <h3>Prueba III: El Mensaje Grabado</h3>
-              <p>Gira la rueda exterior de las alianzas para descifrar el mensaje secreto.</p>
+              <h3>Prueba III: La Pirámide de Monedas</h3>
+              <p>Invertid el sentido de la pirámide moviendo únicamente tres monedas.</p>
             </div>
             <button id="hint-btn-caesar" class="hints-btn"><i class="far fa-lightbulb"></i> Pista</button>
           </div>
 
           <div class="puzzle-content">
             <!-- UI Activa -->
-            <div id="caesar-active-ui" class="decoder-widget">
+            <div id="caesar-active-ui" class="pyramid-widget" style="display: flex; flex-direction: column; align-items: center; gap: 20px; width: 100%;">
+              <div class="riddle-scroll" style="max-width: 600px; margin-bottom: 10px; line-height: 1.6; text-align: center;">
+                "Ante vosotros se alza una pirámide de monedas que apunta hacia arriba.<br>
+                Vuestra misión es lograr que apunte <strong>hacia abajo</strong> (con la base arriba y el vértice abajo) moviendo <strong>únicamente tres monedas</strong> a nuevas posiciones."
+              </div>
               
-              <!-- Rueda César Interactiva en SVG -->
-              <div class="cipher-wheel-container">
-                <!-- Flecha de alineación fija -->
-                <svg style="position: absolute; top: -15px; left: calc(50% - 10px); width: 20px; height: 20px; z-index: 10;" viewBox="0 0 24 24">
-                  <path d="M24 22h-24l12-20z" fill="var(--gold)" filter="drop-shadow(0 0 3px var(--gold))"/>
-                </svg>
-
-                <svg viewBox="0 0 260 260" style="width: 100%; height: 100%;">
-                  <defs>
-                    <radialGradient id="metallic-gold" cx="50%" cy="50%" r="50%">
-                      <stop offset="0%" stop-color="#4a3e26"/>
-                      <stop offset="70%" stop-color="#1f1a10"/>
-                      <stop offset="100%" stop-color="#0e0b07"/>
-                    </radialGradient>
-                    <radialGradient id="metallic-cyan" cx="50%" cy="50%" r="50%">
-                      <stop offset="0%" stop-color="#163740"/>
-                      <stop offset="85%" stop-color="#0a181d"/>
-                      <stop offset="100%" stop-color="#03070a"/>
-                    </radialGradient>
-                  </defs>
-
-                  <!-- Rueda Exterior (Estática pero contenedora de letras generadas en JS) -->
-                  <g id="svg-wheel-outer" class="cipher-wheel-outer">
-                    <circle cx="130" cy="130" r="125" fill="url(#metallic-gold)" stroke="var(--gold)" stroke-width="4"/>
-                    <circle cx="130" cy="130" r="95" fill="none" stroke="var(--gold)" stroke-width="1.5" stroke-dasharray="3,3" opacity="0.5"/>
-                  </g>
-
-                  <!-- Rueda Interior (Móvil, girará por JS) -->
-                  <g id="svg-wheel-inner" class="cipher-wheel-inner" style="transform-origin: 130px 130px;">
-                    <circle cx="130" cy="130" r="92" fill="url(#metallic-cyan)" stroke="var(--cyan)" stroke-width="3"/>
-                    <circle cx="130" cy="130" r="60" fill="none" stroke="var(--cyan)" stroke-width="1" opacity="0.3"/>
-                    <circle cx="130" cy="130" r="15" fill="#000" stroke="var(--cyan)" stroke-width="1.5"/>
-                  </g>
-                </svg>
+              <div class="pyramid-game-panel" style="display: flex; flex-direction: column; align-items: center; gap: 15px; background: rgba(0, 0, 0, 0.4); padding: 25px; border-radius: 15px; border: 1px solid var(--gold-dark); width: 100%; max-width: 460px; box-shadow: inset 0 0 15px rgba(223, 186, 79, 0.1);">
+                <div style="display: flex; justify-content: space-between; width: 100%; padding: 0 10px; font-family: var(--font-mono); font-size: 0.95rem; color: var(--gold); align-items: center;">
+                  <span>Movimientos: <strong id="pyramid-moves" style="color: var(--cyan);">0 / 3</strong></span>
+                  <button id="btn-reset-pyramid" class="pyramid-reset-btn" title="Reiniciar Pirámide"><i class="fas fa-redo-alt"></i> Reiniciar</button>
+                </div>
+                
+                <!-- El contenedor de la pirámide con las 13 posiciones -->
+                <div id="pyramid-board" class="pyramid-board" style="position: relative; width: 400px; height: 350px; margin: 10px 0;">
+                  <!-- Se generará dinámicamente con JS -->
+                </div>
               </div>
-
-              <!-- Controles de rotación -->
-              <div class="wheel-controls">
-                <button id="btn-wheel-left" class="wheel-btn" title="Girar izquierda"><i class="fas fa-undo"></i></button>
-                <div id="shift-text" class="wheel-shift-indicator">DESPLAZAMIENTO: +0</div>
-                <button id="btn-wheel-right" class="wheel-btn" title="Girar derecha"><i class="fas fa-redo"></i></button>
-              </div>
-
-              <!-- Texto Cifrado y su traducción -->
-              <div class="encrypted-box">
-                <div class="encrypted-label">Grabado en las Alianzas:</div>
-                <div class="encrypted-text">HO WHUFHU GLJLWR HV HO VHLV</div>
-                <div class="encrypted-label" style="margin-top: 15px;">Mensaje Descifrado:</div>
-                <div id="decrypted-text" class="decrypted-text-display">...</div>
-              </div>
-
-              <button id="btn-verify-caesar" class="btn-action" style="padding: 12px 35px;">Registrar Código</button>
             </div>
 
             <!-- UI Resuelto -->
             <div id="caesar-solved-ui" class="puzzle-solved-indicator">
-              <h4>¡Mensaje Decodificado!</h4>
-              <p>El grabado nupcial revela con destellos el tercer dígito de la combinación:</p>
+              <h4>¡Pirámide Invertida!</h4>
+              <p>Las monedas de oro resplandecen revelando el tercer dígito de la combinación:</p>
               <div class="unlocked-digit-reveal">6</div>
             </div>
           </div>

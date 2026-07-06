@@ -22,7 +22,7 @@ let gameState = {
   puzzles: {
     riddle: { solved: false, digit: "4", songGuessed: false },
     study: { solved: false, digit: "8" },
-    caesar: { solved: false, digit: "6", currentShift: 0 },
+    caesar: { solved: false, digit: "6", moves: 0, coins: [1, 4, 5, 8, 9, 10, 12, 13, 14, 15] },
     elements: { solved: false, digit: "5", currentOrder: ["tierra", "fuego", "aire", "agua"] }
   },
   hintsUsed: 0,
@@ -46,8 +46,8 @@ const PUZZLE_HINTS = {
     "Pista 2: Usa la llave que encontraste entre los álbumes para abrir el cajón de los discursos. La nota contiene el dígito."
   ],
   caesar: [
-    "Pista 1: Gira la rueda exterior de las alianzas. La rueda externa representa la letra cifrada y la interna la original.",
-    "Pista 2: La alineación correcta es un desplazamiento de +3 (la 'A' exterior coincide con la 'D' interior). El mensaje revelará el número."
+    "Pista 1: Mueve las monedas para invertir la pirámide. El vértice debe apuntar hacia abajo.",
+    "Pista 2: Mueve la moneda superior al extremo inferior. Luego mueve las dos esquinas de la base original a los extremos de la segunda fila."
   ],
   elements: [
     "Pista 1: Lee el texto con atención. Describe la importancia de cada pilar en el matrimonio, relacionándolos en una cadena de dominio.",
@@ -382,7 +382,7 @@ function resetGameData() {
     puzzles: {
       riddle: { solved: false, digit: "4", songGuessed: false },
       study: { solved: false, digit: "8" },
-      caesar: { solved: false, digit: "6", currentShift: 0 },
+      caesar: { solved: false, digit: "6", moves: 0, coins: [1, 4, 5, 8, 9, 10, 12, 13, 14, 15] },
       elements: { solved: false, digit: "5", currentOrder: ["tierra", "fuego", "aire", "agua"] }
     },
     hintsUsed: 0,
@@ -889,96 +889,169 @@ function checkStudyNumber() {
 }
 
 // ==========================================
-// PRUEBA 3: Decodificador César
+// PRUEBA 3: La Pirámide de Monedas
 // ==========================================
+let selectedPyramidSpot = null;
+
 function renderCaesarPuzzle() {
   const solvedSection = document.getElementById("caesar-solved-ui");
   const activeSection = document.getElementById("caesar-active-ui");
   const hintBtn = document.getElementById("hint-btn-caesar");
 
   if (gameState.puzzles.caesar.solved) {
-    solvedSection.style.display = "flex";
-    activeSection.style.display = "none";
+    if (solvedSection) solvedSection.style.display = "flex";
+    if (activeSection) activeSection.style.display = "none";
     if (hintBtn) hintBtn.style.display = "none";
-  } else {
-    solvedSection.style.display = "none";
-    activeSection.style.display = "flex";
-    if (hintBtn) hintBtn.style.display = "flex";
+    return;
   }
 
-  // Actualizar la rotación de los discos en el SVG
-  const outerWheel = document.getElementById("svg-wheel-outer");
-  const innerWheel = document.getElementById("svg-wheel-inner");
-  const shiftVal = gameState.puzzles.caesar.currentShift;
+  if (solvedSection) solvedSection.style.display = "none";
+  if (activeSection) activeSection.style.display = "flex";
+  if (hintBtn) hintBtn.style.display = "flex";
 
-  if (outerWheel && innerWheel) {
-    // 26 letras en el abecedario ingles usado. Cada letra ocupa 360 / 26 = 13.846 grados.
-    const anglePerLetter = 360 / 26;
-    // Rueda externa quieta
-    outerWheel.style.transform = `rotate(0deg)`;
-    // Rueda interna gira según el desplazamiento
-    innerWheel.style.transform = `rotate(${-shiftVal * anglePerLetter}deg)`;
+  // Inicializar estado de monedas si no existe
+  if (!gameState.puzzles.caesar.coins) {
+    gameState.puzzles.caesar.coins = [1, 4, 5, 8, 9, 10, 12, 13, 14, 15];
+    gameState.puzzles.caesar.moves = 0;
   }
 
-  // Actualizar texto descifrado en tiempo real
-  const decryptedDisplay = document.getElementById("decrypted-text");
-  const shiftTextDisplay = document.getElementById("shift-text");
-  
-  if (shiftTextDisplay) {
-    shiftTextDisplay.textContent = `DESPLAZAMIENTO: +${shiftVal}`;
-  }
-
-  const cipherText = "HOW HUFHU GLJLWR HV HO QXHYH";
-  const decrypted = decryptCaesar(cipherText, shiftVal);
-  
-  if (decryptedDisplay) {
-    decryptedDisplay.textContent = decrypted;
-  }
-}
-
-function decryptCaesar(str, shift) {
-  return str.split("").map(char => {
-    if (char === " ") return " ";
-    const idx = GAME_CONFIG.alphabet.indexOf(char);
-    if (idx === -1) return char;
-    
-    // Descifrado César: restar el desplazamiento (con mod 26 positivo)
-    let newIdx = (idx - shift) % 26;
-    if (newIdx < 0) newIdx += 26;
-    
-    return GAME_CONFIG.alphabet[newIdx];
-  }).join("");
-}
-
-function rotateWheel(direction) {
-  playSound("gear");
-  let shift = gameState.puzzles.caesar.currentShift;
-  if (direction === 'left') {
-    shift = (shift - 1 + 26) % 26;
-  } else {
-    shift = (shift + 1) % 26;
-  }
-  gameState.puzzles.caesar.currentShift = shift;
-  saveGame();
-  renderCaesarPuzzle();
-}
-
-function verifyCaesarSolution() {
-  const currentShift = gameState.puzzles.caesar.currentShift;
-  if (currentShift === GAME_CONFIG.caesarShiftTarget) {
-    playSound("success");
-    gameState.puzzles.caesar.solved = true;
-    saveGame();
-    renderState();
-    triggerSuccessAnimation("pane-caesar");
-  } else {
-    playSound("failure");
-    const textEl = document.getElementById("decrypted-text");
-    if (textEl) {
-      textEl.classList.add("shaking");
-      setTimeout(() => textEl.classList.remove("shaking"), 500);
+  const movesText = document.getElementById("pyramid-moves");
+  if (movesText) {
+    movesText.textContent = `${gameState.puzzles.caesar.moves} / 3`;
+    if (gameState.puzzles.caesar.moves > 3) {
+      movesText.style.color = "var(--red-alert)";
+    } else {
+      movesText.style.color = "var(--cyan)";
     }
   }
+
+  const board = document.getElementById("pyramid-board");
+  if (!board) return;
+
+  board.innerHTML = "";
+
+  const PYRAMID_SPOTS = [
+    { y: 0, x: 0.5, top: 25, left: 120 },
+    { y: 0, x: 1.5, top: 25, left: 200 },
+    { y: 0, x: 2.5, top: 25, left: 280 },
+    { y: 1, x: 0.0, top: 100, left: 80 },
+    { y: 1, x: 1.0, top: 100, left: 160 },
+    { y: 1, x: 2.0, top: 100, left: 240 },
+    { y: 1, x: 3.0, top: 100, left: 320 },
+    { y: 2, x:-0.5, top: 175, left: 40 },
+    { y: 2, x: 0.5, top: 175, left: 120 },
+    { y: 2, x: 1.5, top: 175, left: 200 },
+    { y: 2, x: 2.5, top: 175, left: 280 },
+    { y: 2, x: 3.5, top: 175, left: 360 },
+    { y: 3, x: 0.0, top: 250, left: 80 },
+    { y: 3, x: 1.0, top: 250, left: 160 },
+    { y: 3, x: 2.0, top: 250, left: 240 },
+    { y: 3, x: 3.0, top: 250, left: 320 },
+    { y: 4, x: 0.5, top: 325, left: 120 },
+    { y: 4, x: 1.5, top: 325, left: 200 },
+    { y: 4, x: 2.5, top: 325, left: 280 }
+  ];
+
+  PYRAMID_SPOTS.forEach((spot, idx) => {
+    const hasCoin = gameState.puzzles.caesar.coins.includes(idx);
+    
+    // Crear el slot
+    const slotEl = document.createElement("div");
+    slotEl.className = "pyramid-spot";
+    if (hasCoin) slotEl.classList.add("has-coin");
+    slotEl.style.top = `${spot.top}px`;
+    slotEl.style.left = `${spot.left}px`;
+    
+    slotEl.addEventListener("click", () => {
+      handlePyramidSpotClick(idx);
+    });
+    
+    board.appendChild(slotEl);
+
+    // Si tiene moneda, crear el elemento moneda
+    if (hasCoin) {
+      const coinEl = document.createElement("div");
+      coinEl.className = "coin";
+      if (selectedPyramidSpot === idx) {
+        coinEl.classList.add("selected");
+      }
+      coinEl.style.top = `${spot.top}px`;
+      coinEl.style.left = `${spot.left}px`;
+      
+      coinEl.addEventListener("click", (e) => {
+        e.stopPropagation();
+        handlePyramidSpotClick(idx);
+      });
+      
+      board.appendChild(coinEl);
+    }
+  });
+}
+
+function handlePyramidSpotClick(idx) {
+  if (gameState.puzzles.caesar.solved) return;
+
+  const hasCoin = gameState.puzzles.caesar.coins.includes(idx);
+
+  if (selectedPyramidSpot === null) {
+    if (hasCoin) {
+      selectedPyramidSpot = idx;
+      playSound("click");
+      renderCaesarPuzzle();
+    }
+  } else {
+    if (idx === selectedPyramidSpot) {
+      selectedPyramidSpot = null;
+      playSound("click");
+      renderCaesarPuzzle();
+    } else if (hasCoin) {
+      selectedPyramidSpot = idx;
+      playSound("click");
+      renderCaesarPuzzle();
+    } else {
+      const coinArr = gameState.puzzles.caesar.coins;
+      const coinIndexInArr = coinArr.indexOf(selectedPyramidSpot);
+      
+      if (coinIndexInArr !== -1) {
+        coinArr[coinIndexInArr] = idx;
+        gameState.puzzles.caesar.moves++;
+        selectedPyramidSpot = null;
+        playSound("click");
+        
+        checkPyramidSolution();
+        saveGame();
+        renderCaesarPuzzle();
+      }
+    }
+  }
+}
+
+function checkPyramidSolution() {
+  const target = [3, 4, 5, 6, 8, 9, 10, 13, 14, 17];
+  const current = gameState.puzzles.caesar.coins;
+  
+  const isSolved = target.every(pos => current.includes(pos));
+  
+  if (isSolved) {
+    if (gameState.puzzles.caesar.moves <= 3) {
+      playSound("success");
+      gameState.puzzles.caesar.solved = true;
+      saveGame();
+      renderState();
+      triggerSuccessAnimation("pane-caesar");
+    } else {
+      showToast("¡Pirámide invertida! Pero has usado más de 3 movimientos. Pulsa reiniciar para intentarlo en exactamente 3.", "info");
+    }
+  }
+}
+
+function resetPyramidGame() {
+  playSound("click");
+  gameState.puzzles.caesar.coins = [1, 4, 5, 8, 9, 10, 12, 13, 14, 15];
+  gameState.puzzles.caesar.moves = 0;
+  selectedPyramidSpot = null;
+  saveGame();
+  renderCaesarPuzzle();
 }
 
 // ==========================================
@@ -1630,58 +1703,7 @@ function closeHintsModal() {
 // ==========================================
 // CONTROLES DE LA PARTIDA Y EVENTOS BASE
 // ==========================================
-function initCaesarWheel() {
-  const outer = document.getElementById("svg-wheel-outer");
-  const inner = document.getElementById("svg-wheel-inner");
-  if (!outer || !inner) return;
-  
-  const rOuter = 108;
-  const rInner = 76;
-  const cx = 130;
-  const cy = 130;
-  const alphabet = GAME_CONFIG.alphabet;
-  
-  // Limpiar letras si ya existieran
-  const existingTexts = [...outer.querySelectorAll("text"), ...inner.querySelectorAll("text")];
-  existingTexts.forEach(t => t.remove());
-  
-  for (let i = 0; i < 26; i++) {
-    const angleDeg = (i * 360 / 26) - 90; // Empezar arriba
-    const angleRad = angleDeg * Math.PI / 180;
-    
-    // Letra exterior
-    const xO = cx + rOuter * Math.cos(angleRad);
-    const yO = cy + rOuter * Math.sin(angleRad);
-    const textO = document.createElementNS("http://www.w3.org/2000/svg", "text");
-    textO.setAttribute("x", xO);
-    textO.setAttribute("y", yO);
-    textO.setAttribute("text-anchor", "middle");
-    textO.setAttribute("dominant-baseline", "central");
-    textO.setAttribute("transform", `rotate(${angleDeg + 90}, ${xO}, ${yO})`);
-    textO.setAttribute("fill", "var(--gold)");
-    textO.setAttribute("font-family", "var(--font-serif)");
-    textO.setAttribute("font-size", "14px");
-    textO.setAttribute("font-weight", "bold");
-    textO.textContent = alphabet[i];
-    outer.appendChild(textO);
-    
-    // Letra interior
-    const xI = cx + rInner * Math.cos(angleRad);
-    const yI = cy + rInner * Math.sin(angleRad);
-    const textI = document.createElementNS("http://www.w3.org/2000/svg", "text");
-    textI.setAttribute("x", xI);
-    textI.setAttribute("y", yI);
-    textI.setAttribute("text-anchor", "middle");
-    textI.setAttribute("dominant-baseline", "central");
-    textI.setAttribute("transform", `rotate(${angleDeg + 90}, ${xI}, ${yI})`);
-    textI.setAttribute("fill", "var(--cyan)");
-    textI.setAttribute("font-family", "var(--font-serif)");
-    textI.setAttribute("font-size", "11px");
-    textI.setAttribute("font-weight", "bold");
-    textI.textContent = alphabet[i];
-    inner.appendChild(textI);
-  }
-}
+
 
 function startAdventure() {
   initAudio();
@@ -1715,12 +1737,7 @@ function restartAdventure() {
 
 // Inicialización global cuando el DOM está listo
 document.addEventListener("DOMContentLoaded", () => {
-  // Intentar cargar partida
   const loaded = loadGame();
-  
-  // Generar la rueda César
-  initCaesarWheel();
-
   if (loaded) {
     if (gameState.isPlaying) {
       startTimer();
@@ -1832,10 +1849,11 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Decodificador César
-  document.getElementById("btn-wheel-left").addEventListener("click", () => rotateWheel("left"));
-  document.getElementById("btn-wheel-right").addEventListener("click", () => rotateWheel("right"));
-  document.getElementById("btn-verify-caesar").addEventListener("click", verifyCaesarSolution);
+  // Pirámide de Monedas
+  const resetPyramidBtn = document.getElementById("btn-reset-pyramid");
+  if (resetPyramidBtn) {
+    resetPyramidBtn.addEventListener("click", resetPyramidGame);
+  }
 
   // Caja fuerte teclado
   const keys = document.querySelectorAll(".key-btn");
