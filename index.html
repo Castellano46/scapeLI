@@ -18,7 +18,7 @@
       <p class="intro-story">
         "Tras sobrevivir a la ceremonia, esquivar las lágrimas de emoción y arrasar la barra libre, os enfrentáis al reto más importante.<br><br>
         Cuenta la leyenda que, en algún rincón de este lugar, se oculta el <span class="sobre-sagrado-glow">Sobre Sagrado ✉️✨</span>.<br><br>
-        Debereis agudizar vuestro ingenio y aventuraros a encontrar el sobre que contiene la legendaria dádiva desaparecida. Las malas lenguas cuentan y afirman que fue escondido en las mismísimas entrañas de esta morada por mentes tan infames (como las de Pedro y Mari, empeñados en haceros sudar un poco antes de daros el regalo) y solo podrá ser descubierto por una intrépida y astuta pareja.<br><br>
+        Debereis agudizar vuestro ingenio y aventuraros a encontrar el sobre que contiene la legendaria dádiva desaparecida. Las malas lenguas cuentan y afirman que fue escondido en las mismísimas entrañas de esta morada por mentes tan infames (como las de Pedro y Mari) empeñados en haceros sudar un poco antes de daros el regalo y solo podrá ser descubierto por una intrépida y astuta pareja.<br><br>
         Para recuperarlo, deberéis superar acertijos, resolver pruebas y seguir las pistas que os conducirán hasta su escondite. Cada desafío os acercará un paso más al tesoro.<br><br>
         Reunid vuestro ingenio y haceos merecedores de dicho botín.<br><br>
         La búsqueda comienza ahora."
@@ -146,8 +146,8 @@
 
         <button id="nav-elements" class="nav-btn">
           <div class="nav-btn-info">
-            <span class="nav-btn-title">Sala IV: Las Alianzas</span>
-            <span class="nav-btn-desc">El orden del matrimonio</span>
+            <span class="nav-btn-title">Sala IV: El Laberinto</span>
+            <span class="nav-btn-desc">Espejos del Amor</span>
           </div>
           <span class="nav-status"><i class="fas fa-lock"></i></span>
         </button>
@@ -290,14 +290,14 @@
                 Vuestra misión es lograr que apunte <strong>hacia abajo</strong> (con la base arriba y el vértice abajo) moviendo <strong>únicamente tres monedas</strong> a nuevas posiciones."
               </div>
               
-              <div class="pyramid-game-panel" style="display: flex; flex-direction: column; align-items: center; gap: 15px; background: rgba(0, 0, 0, 0.4); padding: 25px; border-radius: 15px; border: 1px solid var(--gold-dark); width: 100%; max-width: 460px; box-shadow: inset 0 0 15px rgba(223, 186, 79, 0.1);">
+              <div class="pyramid-game-panel" style="display: flex; flex-direction: column; align-items: center; gap: 15px; background: rgba(0, 0, 0, 0.4); padding: 25px; border-radius: 15px; border: 1px solid var(--gold-dark); width: 100%; max-width: 530px; box-shadow: inset 0 0 15px rgba(223, 186, 79, 0.1);">
                 <div style="display: flex; justify-content: space-between; width: 100%; padding: 0 10px; font-family: var(--font-mono); font-size: 0.95rem; color: var(--gold); align-items: center;">
                   <span>Movimientos: <strong id="pyramid-moves" style="color: var(--cyan);">0 / 3</strong></span>
                   <button id="btn-reset-pyramid" class="pyramid-reset-btn" title="Reiniciar Pirámide"><i class="fas fa-redo-alt"></i> Reiniciar</button>
                 </div>
                 
                 <!-- El contenedor de la pirámide con las 13 posiciones -->
-                <div id="pyramid-board" class="pyramid-board" style="position: relative; width: 400px; height: 350px; margin: 10px 0;">
+                <div id="pyramid-board" class="pyramid-board" style="position: relative; width: 480px; height: 350px; margin: 10px 0;">
                   <!-- Se generará dinámicamente con JS -->
                 </div>
               </div>
@@ -306,41 +306,54 @@
             <!-- UI Resuelto -->
             <div id="caesar-solved-ui" class="puzzle-solved-indicator">
               <h4>¡Pirámide Invertida!</h4>
-              <p>Las monedas de oro resplandecen revelando el tercer dígito de la combinación:</p>
+              <p></p>
               <div class="unlocked-digit-reveal">6</div>
             </div>
           </div>
         </div>
 
-        <!-- PRUEBA 4: PUZZLE DE ELEMENTOS -->
+        <!-- PRUEBA 4: EL ASTROLABIO DEL DESTINO -->
         <div id="pane-elements" class="puzzle-pane">
           <div class="puzzle-header">
             <div class="puzzle-title">
-              <h3>Prueba IV: Las Claves del Matrimonio</h3>
-              <p>Ordena los pilares de la pareja de mayor a menor poder según la cadena descrita.</p>
+              <h3>Prueba IV: El Astrolabio del Destino</h3>
+              <p>Haced girar los anillos concéntricos interconectados para alinear las letras y revelar el último dígito.</p>
             </div>
             <button id="hint-btn-elements" class="hints-btn"><i class="far fa-lightbulb"></i> Pista</button>
           </div>
 
           <div class="puzzle-content">
             <!-- UI Activa -->
-            <div id="elements-active-ui" class="elements-puzzle-container">
-              <div class="elements-riddle">
-                "En la vida en común, el Fuego de la pasión aviva y consume al Aire de las dudas, el Agua de la calma apacigua al Fuego del enojo,<br>
-                y la Tierra de la paciencia absorbe al Agua. Ordenadlos del que tiene mayor poder de cambio en esta cadena al que lo contiene."<br>
-                <span style="font-size: 0.8rem; color: var(--gold-dark);">(Arrastra los elementos o haz clic para intercambiarlos)</span>
+            <div id="elements-active-ui" class="astrolabe-puzzle-container" style="display: flex; flex-direction: column; align-items: center; gap: 20px; width: 100%;">
+              <div class="riddle-scroll" style="max-width: 600px; margin-bottom: 10px; line-height: 1.6; text-align: center;">
+                "Cuatro anillos de bronce custodian la última runa de la combinación. Al girar uno, la fricción arrastra a sus vecinos.<br>
+                Alinead las letras en la parte superior para deletrear la palabra que sella vuestra unión. (de dentro hacia fuera)."
               </div>
 
-              <!-- Slots contenedores de las runas elementales -->
-              <div id="elements-slots-container" class="elements-slots">
-                <!-- Se poblarán dinámicamente mediante JS -->
+              <div class="astrolabe-game-panel" style="display: flex; flex-direction: column; align-items: center; gap: 20px; background: rgba(0, 0, 0, 0.4); padding: 30px; border-radius: 15px; border: 1px solid var(--gold-dark); width: 100%; max-width: 530px; box-shadow: inset 0 0 20px rgba(223, 186, 79, 0.15);">
+                
+                <!-- Astrolabio Mecánico -->
+                <div class="astrolabe-device" style="position: relative; width: 380px; height: 380px; background: radial-gradient(circle, #2d1f10 0%, #150f08 100%); border: 4px solid var(--gold-dark); border-radius: 50%; box-shadow: 0 0 30px rgba(0,0,0,0.8), inset 0 0 30px rgba(223,186,79,0.3); overflow: hidden;">
+                  
+                  <!-- Línea de alineación superior (glowing marker) -->
+                  <div class="astrolabe-marker" style="position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 4px; height: 35px; background: linear-gradient(to bottom, var(--gold-bright), transparent); z-index: 15; box-shadow: 0 0 8px var(--gold-bright);"></div>
+                  <div class="astrolabe-marker-arrow" style="position: absolute; top: 32px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 6px solid transparent; border-right: 6px solid transparent; border-top: 8px solid var(--gold-bright); z-index: 15; filter: drop-shadow(0 0 4px var(--gold-bright));"></div>
+
+                  <!-- Anillos Concéntricos generados dinámicamente con JS -->
+                  <div id="astrolabe-board" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></div>
+
+                </div>
+
+                <!-- Botón de reset -->
+                <button id="btn-reset-astrolabe" class="pyramid-reset-btn" style="margin-top: 10px;"><i class="fas fa-redo-alt"></i> Reiniciar Astrolabio</button>
+
               </div>
             </div>
 
             <!-- UI Resuelto -->
             <div id="elements-solved-ui" class="puzzle-solved-indicator">
-              <h4>¡Pilares Alineados!</h4>
-              <p>Las runas del matrimonio brillan entregando el último dígito:</p>
+              <h4>¡Astrolabio Alineado!</h4>
+              <p></p>
               <div class="unlocked-digit-reveal">5</div>
             </div>
           </div>

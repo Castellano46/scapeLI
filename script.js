@@ -22,8 +22,8 @@ let gameState = {
   puzzles: {
     riddle: { solved: false, digit: "4", songGuessed: false },
     study: { solved: false, digit: "8" },
-    caesar: { solved: false, digit: "6", moves: 0, coins: [1, 4, 5, 8, 9, 10, 12, 13, 14, 15] },
-    elements: { solved: false, digit: "5", currentOrder: ["tierra", "fuego", "aire", "agua"] }
+    caesar: { solved: false, digit: "6", moves: 0, coins: [2, 7, 8, 12, 13, 14, 17, 18, 19, 20] },
+    elements: { solved: false, digit: "5", astrolabe: null }
   },
   hintsUsed: 0,
   finalChallengeSolved: false,
@@ -50,8 +50,8 @@ const PUZZLE_HINTS = {
     "Pista 2: Mueve la moneda superior al extremo inferior. Luego mueve las dos esquinas de la base original a los extremos de la segunda fila."
   ],
   elements: [
-    "Pista 1: Lee el texto con atención. Describe la importancia de cada pilar en el matrimonio, relacionándolos en una cadena de dominio.",
-    "Pista 2: El orden correcto de izquierda a derecha es: Fuego (rojo), Agua (azul), Tierra (verde), Aire (gris/blanco)."
+    "Pista 1: Al pulsar cada anillo, este gira y transmite su movimiento a un anillo vecino. Debes alinear las letras de los 4 anillos en la vertical de arriba (a las 12 en punto) para deletrear la palabra AMOR.",
+    "Pista 2: Pulsa el Anillo 1 (interno) tres veces, el Anillo 2 dos veces, y el Anillo 3 tres veces. El Anillo 4 no requiere clics desde el inicio."
   ]
 };
 
@@ -382,8 +382,8 @@ function resetGameData() {
     puzzles: {
       riddle: { solved: false, digit: "4", songGuessed: false },
       study: { solved: false, digit: "8" },
-      caesar: { solved: false, digit: "6", moves: 0, coins: [1, 4, 5, 8, 9, 10, 12, 13, 14, 15] },
-      elements: { solved: false, digit: "5", currentOrder: ["tierra", "fuego", "aire", "agua"] }
+      caesar: { solved: false, digit: "6", moves: 0, coins: [2, 7, 8, 12, 13, 14, 17, 18, 19, 20] },
+      elements: { solved: false, digit: "5", astrolabe: null }
     },
     hintsUsed: 0,
     finalChallengeSolved: false,
@@ -911,7 +911,7 @@ function renderCaesarPuzzle() {
 
   // Inicializar estado de monedas si no existe
   if (!gameState.puzzles.caesar.coins) {
-    gameState.puzzles.caesar.coins = [1, 4, 5, 8, 9, 10, 12, 13, 14, 15];
+    gameState.puzzles.caesar.coins = [2, 7, 8, 12, 13, 14, 17, 18, 19, 20];
     gameState.puzzles.caesar.moves = 0;
   }
 
@@ -931,25 +931,33 @@ function renderCaesarPuzzle() {
   board.innerHTML = "";
 
   const PYRAMID_SPOTS = [
-    { y: 0, x: 0.5, top: 25, left: 120 },
-    { y: 0, x: 1.5, top: 25, left: 200 },
-    { y: 0, x: 2.5, top: 25, left: 280 },
-    { y: 1, x: 0.0, top: 100, left: 80 },
-    { y: 1, x: 1.0, top: 100, left: 160 },
-    { y: 1, x: 2.0, top: 100, left: 240 },
-    { y: 1, x: 3.0, top: 100, left: 320 },
-    { y: 2, x:-0.5, top: 175, left: 40 },
-    { y: 2, x: 0.5, top: 175, left: 120 },
-    { y: 2, x: 1.5, top: 175, left: 200 },
-    { y: 2, x: 2.5, top: 175, left: 280 },
-    { y: 2, x: 3.5, top: 175, left: 360 },
-    { y: 3, x: 0.0, top: 250, left: 80 },
-    { y: 3, x: 1.0, top: 250, left: 160 },
-    { y: 3, x: 2.0, top: 250, left: 240 },
-    { y: 3, x: 3.0, top: 250, left: 320 },
-    { y: 4, x: 0.5, top: 325, left: 120 },
-    { y: 4, x: 1.5, top: 325, left: 200 },
-    { y: 4, x: 2.5, top: 325, left: 280 }
+    { y: 0, x: 0.0, top: 25, left: 80 },
+    { y: 0, x: 1.0, top: 25, left: 160 },
+    { y: 0, x: 2.0, top: 25, left: 240 },
+    { y: 0, x: 3.0, top: 25, left: 320 },
+    { y: 0, x: 4.0, top: 25, left: 400 },
+    { y: 1, x: 0.5, top: 100, left: 40 },
+    { y: 1, x: 1.5, top: 100, left: 120 },
+    { y: 1, x: 2.5, top: 100, left: 200 },
+    { y: 1, x: 3.5, top: 100, left: 280 },
+    { y: 1, x: 4.5, top: 100, left: 360 },
+    { y: 1, x: 5.5, top: 100, left: 440 },
+    { y: 2, x: 0.0, top: 175, left: 80 },
+    { y: 2, x: 1.0, top: 175, left: 160 },
+    { y: 2, x: 2.0, top: 175, left: 240 },
+    { y: 2, x: 3.0, top: 175, left: 320 },
+    { y: 2, x: 4.0, top: 175, left: 400 },
+    { y: 3, x: 0.5, top: 250, left: 40 },
+    { y: 3, x: 1.5, top: 250, left: 120 },
+    { y: 3, x: 2.5, top: 250, left: 200 },
+    { y: 3, x: 3.5, top: 250, left: 280 },
+    { y: 3, x: 4.5, top: 250, left: 360 },
+    { y: 3, x: 5.5, top: 250, left: 440 },
+    { y: 4, x: 0.0, top: 325, left: 80 },
+    { y: 4, x: 1.0, top: 325, left: 160 },
+    { y: 4, x: 2.0, top: 325, left: 240 },
+    { y: 4, x: 3.0, top: 325, left: 320 },
+    { y: 4, x: 4.0, top: 325, left: 400 }
   ];
 
   PYRAMID_SPOTS.forEach((spot, idx) => {
@@ -1027,7 +1035,7 @@ function handlePyramidSpotClick(idx) {
 }
 
 function checkPyramidSolution() {
-  const target = [3, 4, 5, 6, 8, 9, 10, 13, 14, 17];
+  const target = [6, 7, 8, 9, 12, 13, 14, 18, 19, 24];
   const current = gameState.puzzles.caesar.coins;
   
   const isSolved = target.every(pos => current.includes(pos));
@@ -1039,23 +1047,39 @@ function checkPyramidSolution() {
       saveGame();
       renderState();
       triggerSuccessAnimation("pane-caesar");
-    } else {
-      showToast("¡Pirámide invertida! Pero has usado más de 3 movimientos. Pulsa reiniciar para intentarlo en exactamente 3.", "info");
+    }
+  } else {
+    // Si llegamos a 3 o más movimientos y no se ha resuelto
+    if (gameState.puzzles.caesar.moves >= 3) {
+      playSound("failure");
+      showToast("¡Límite de 3 movimientos alcanzado! Reiniciando tablero...", "error");
+      
+      const board = document.getElementById("pyramid-board");
+      if (board) board.style.pointerEvents = "none";
+      
+      setTimeout(() => {
+        resetPyramidGameWithoutAlert();
+        if (board) board.style.pointerEvents = "";
+      }, 1000);
     }
   }
 }
 
-function resetPyramidGame() {
-  playSound("click");
-  gameState.puzzles.caesar.coins = [1, 4, 5, 8, 9, 10, 12, 13, 14, 15];
+function resetPyramidGameWithoutAlert() {
+  gameState.puzzles.caesar.coins = [2, 7, 8, 12, 13, 14, 17, 18, 19, 20];
   gameState.puzzles.caesar.moves = 0;
   selectedPyramidSpot = null;
   saveGame();
   renderCaesarPuzzle();
 }
 
+function resetPyramidGame() {
+  playSound("click");
+  resetPyramidGameWithoutAlert();
+}
+
 // ==========================================
-// PRUEBA 4: Alineación de Elementos
+// PRUEBA 4: El Astrolabio del Destino
 // ==========================================
 function renderElementsPuzzle() {
   const solvedSection = document.getElementById("elements-solved-ui");
@@ -1063,173 +1087,160 @@ function renderElementsPuzzle() {
   const hintBtn = document.getElementById("hint-btn-elements");
 
   if (gameState.puzzles.elements.solved) {
-    solvedSection.style.display = "flex";
-    activeSection.style.display = "none";
+    if (solvedSection) solvedSection.style.display = "flex";
+    if (activeSection) activeSection.style.display = "none";
     if (hintBtn) hintBtn.style.display = "none";
-  } else {
-    solvedSection.style.display = "none";
-    activeSection.style.display = "flex";
-    if (hintBtn) hintBtn.style.display = "flex";
-    
-    // Renderizar los tokens según el orden actual
-    renderElementTokens();
-  }
-}
-
-function renderElementTokens() {
-  const container = document.getElementById("elements-slots-container");
-  if (!container) return;
-  
-  // Limpiar antes de pintar
-  container.innerHTML = "";
-  
-  const order = gameState.puzzles.elements.currentOrder;
-  
-  const elementLabels = {
-    fuego: "Pasión",
-    agua: "Calma",
-    tierra: "Paciencia",
-    aire: "Libertad"
-  };
-
-  const elementSVGs = {
-    fuego: `<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" style="display:none;"/><path d="M17.06 11.57c-.57-.83-1.39-1.5-2.02-2.31-.69-.9-1.2-1.92-1.2-3.13 0-1.89 1.09-3.48 2.65-4.22-.44-.1-.91-.16-1.39-.16-3.16 0-5.73 2.57-5.73 5.73 0 .74.14 1.44.4 2.08-.94-.85-1.54-2.07-1.54-3.42 0-.25.02-.49.06-.73-2.04 1.76-3.32 4.39-3.32 7.32 0 5.28 4.28 9.56 9.56 9.56s9.56-4.28 9.56-9.56c0-1.63-.41-3.17-1.13-4.51-1 .96-1.42 2.39-2.01 3.48z"/>`,
-    agua: `<path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/>`,
-    tierra: `<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.53c-.26-.81-1-1.4-1.9-1.4h-1v-3c0-.55-.45-1-1-1h-6v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>`,
-    aire: `<path d="M19.36 10.04a6 6 0 0 0-11.3-1.95 4.5 4.5 0 0 0 .94 8.91h10.36a3.5 3.5 0 0 0 .94-6.96z"/>`
-  };
-
-  order.forEach((elem, index) => {
-    const token = document.createElement("div");
-    token.className = "element-token";
-    token.setAttribute("draggable", "true");
-    token.setAttribute("data-element", elem);
-    token.setAttribute("data-index", index);
-    
-    token.innerHTML = `
-      <svg class="element-icon" viewBox="0 0 24 24">
-        ${elementSVGs[elem]}
-      </svg>
-      <span class="element-label">${elementLabels[elem]}</span>
-    `;
-
-    // Asignar eventos de drag and drop
-    token.addEventListener("dragstart", handleDragStart);
-    token.addEventListener("dragover", handleDragOver);
-    token.addEventListener("dragenter", handleDragEnter);
-    token.addEventListener("dragleave", handleDragLeave);
-    token.addEventListener("drop", handleDrop);
-    token.addEventListener("dragend", handleDragEnd);
-
-    // Soporte para dispositivos móviles mediante clic simple (intercambiar con el anterior/siguiente)
-    token.addEventListener("click", () => handleTokenClick(index));
-
-    container.appendChild(token);
-  });
-}
-
-// Lógica de Drag & Drop
-let dragSrcEl = null;
-
-function handleDragStart(e) {
-  this.classList.add("dragging");
-  dragSrcEl = this;
-  e.dataTransfer.effectAllowed = "move";
-  e.dataTransfer.setData("text/html", this.innerHTML);
-}
-
-function handleDragOver(e) {
-  if (e.preventDefault) {
-    e.preventDefault();
-  }
-  e.dataTransfer.dropEffect = "move";
-  return false;
-}
-
-function handleDragEnter() {
-  this.classList.add("over");
-}
-
-function handleDragLeave() {
-  this.classList.remove("over");
-}
-
-function handleDrop(e) {
-  if (e.stopPropagation) {
-    e.stopPropagation();
+    return;
   }
 
-  if (dragSrcEl !== this) {
-    const srcIndex = parseInt(dragSrcEl.getAttribute("data-index"));
-    const targetIndex = parseInt(this.getAttribute("data-index"));
-    
-    // Intercambiar en la matriz de estado
-    const order = gameState.puzzles.elements.currentOrder;
-    const temp = order[srcIndex];
-    order[srcIndex] = order[targetIndex];
-    order[targetIndex] = temp;
-    
-    playSound("gear");
+  if (solvedSection) solvedSection.style.display = "none";
+  if (activeSection) activeSection.style.display = "flex";
+  if (hintBtn) hintBtn.style.display = "flex";
+
+  // Inicializar estado del astrolabio si no existe o tiene formato antiguo
+  if (!gameState.puzzles.elements.astrolabe || gameState.puzzles.elements.astrolabe.length !== 4) {
+    gameState.puzzles.elements.astrolabe = [1, 2, 1, 2];
     saveGame();
-    renderElementsPuzzle();
-    checkElementsSolution();
   }
-  return false;
-}
 
-function handleDragEnd() {
-  const tokens = document.querySelectorAll(".element-token");
-  tokens.forEach(token => {
-    token.classList.remove("dragging");
-    token.classList.remove("over");
-  });
-}
+  const board = document.getElementById("astrolabe-board");
+  if (!board) return;
+  board.innerHTML = "";
 
-// Para móviles/clic normal: clic en uno selecciona, clic en otro los intercambia
-let selectedTokenIndex = null;
+  // Configuración de los anillos concéntricos
+  const ringsConfig = [
+    { id: 1, size: 120, zIndex: 4, letters: ["A", "C", "T", "N"] },
+    { id: 2, size: 200, zIndex: 3, letters: ["U", "M", "E", "P"] },
+    { id: 3, size: 280, zIndex: 2, letters: ["H", "D", "O", "X"] },
+    { id: 4, size: 360, zIndex: 1, letters: ["K", "Q", "J", "R"] }
+  ];
 
-function handleTokenClick(index) {
-  if (selectedTokenIndex === null) {
-    selectedTokenIndex = index;
-    // Resaltar visualmente
-    const tokens = document.querySelectorAll(".element-token");
-    tokens[index].style.borderColor = "var(--gold)";
-    tokens[index].style.boxShadow = "0 0 15px var(--gold)";
-    playSound("click");
-  } else {
-    if (selectedTokenIndex !== index) {
-      const order = gameState.puzzles.elements.currentOrder;
-      const temp = order[selectedTokenIndex];
-      order[selectedTokenIndex] = order[index];
-      order[index] = temp;
+  const rotations = gameState.puzzles.elements.astrolabe;
+
+  ringsConfig.forEach((cfg, idx) => {
+    const ringEl = document.createElement("div");
+    ringEl.className = "astrolabe-ring";
+    ringEl.style.width = `${cfg.size}px`;
+    ringEl.style.height = `${cfg.size}px`;
+    ringEl.style.zIndex = cfg.zIndex;
+    
+    // Aplicar la rotación correspondiente
+    const rIndex = rotations[idx];
+    ringEl.style.transform = `translate(-50%, -50%) rotate(${rIndex * 90}deg)`;
+
+    // Crear las 4 letras distribuidas a 90 grados
+    cfg.letters.forEach((char, letterIdx) => {
+      const span = document.createElement("span");
+      span.className = "astrolabe-ring-span";
+      span.innerText = char;
       
-      playSound("gear");
-      saveGame();
-      renderElementsPuzzle();
-      checkElementsSolution();
-    }
-    selectedTokenIndex = null;
-  }
+      if (letterIdx === 0) { // Arriba
+        span.style.top = "8px";
+        span.style.left = "50%";
+        span.style.transform = "translateX(-50%)";
+      } else if (letterIdx === 1) { // Derecha
+        span.style.right = "8px";
+        span.style.top = "50%";
+        span.style.transform = "translateY(-50%) rotate(90deg)";
+      } else if (letterIdx === 2) { // Abajo
+        span.style.bottom = "8px";
+        span.style.left = "50%";
+        span.style.transform = "translateX(-50%) rotate(180deg)";
+      } else if (letterIdx === 3) { // Izquierda
+        span.style.left = "8px";
+        span.style.top = "50%";
+        span.style.transform = "translateY(-50%) rotate(270deg)";
+      }
+      
+      ringEl.appendChild(span);
+    });
+
+    // Event listener para rotar al hacer clic en el anillo
+    ringEl.addEventListener("click", (e) => {
+      e.stopPropagation();
+      rotateRing(idx);
+    });
+
+    board.appendChild(ringEl);
+  });
+
+  // Núcleo central estético
+  const core = document.createElement("div");
+  core.style.position = "absolute";
+  core.style.top = "50%";
+  core.style.left = "50%";
+  core.style.transform = "translate(-50%, -50%)";
+  core.style.width = "40px";
+  core.style.height = "40px";
+  core.style.background = "radial-gradient(circle, var(--gold-bright) 0%, var(--gold-dark) 100%)";
+  core.style.borderRadius = "50%";
+  core.style.zIndex = "5";
+  core.style.boxShadow = "0 0 15px var(--gold-bright)";
+  board.appendChild(core);
 }
 
-function checkElementsSolution() {
-  const current = gameState.puzzles.elements.currentOrder;
-  const target = GAME_CONFIG.elementsOrderTarget;
-  
-  let match = true;
-  for (let i = 0; i < target.length; i++) {
-    if (current[i] !== target[i]) {
-      match = false;
-      break;
-    }
+function rotateRing(idx) {
+  playSound("gear");
+  const rotations = gameState.puzzles.elements.astrolabe || [1, 2, 1, 2];
+
+  // Aplicar fricción (interlocking) entre los anillos concéntricos
+  if (idx === 0) { // Anillo 1 gira a sí mismo y al Anillo 2
+    rotations[0] = (rotations[0] + 1) % 4;
+    rotations[1] = (rotations[1] + 1) % 4;
+  }
+  else if (idx === 1) { // Anillo 2 gira a sí mismo y al Anillo 3 en sentido antihorario
+    rotations[1] = (rotations[1] + 1) % 4;
+    rotations[2] = (rotations[2] - 1 + 4) % 4;
+  }
+  else if (idx === 2) { // Anillo 3 gira a sí mismo y al Anillo 4
+    rotations[2] = (rotations[2] + 1) % 4;
+    rotations[3] = (rotations[3] + 1) % 4;
+  }
+  else if (idx === 3) { // Anillo 4 gira a sí mismo y al Anillo 1 en sentido antihorario
+    rotations[3] = (rotations[3] + 1) % 4;
+    rotations[0] = (rotations[0] - 1 + 4) % 4;
   }
 
-  if (match) {
+  gameState.puzzles.elements.astrolabe = rotations;
+  saveGame();
+  renderElementsPuzzle();
+  checkAstrolabeSolution();
+}
+
+function checkAstrolabeSolution() {
+  const rotations = gameState.puzzles.elements.astrolabe || [1, 2, 1, 2];
+  
+  // Lista de letras correspondientes
+  const letters = [
+    ["A", "C", "T", "N"],
+    ["U", "M", "E", "P"],
+    ["H", "D", "O", "X"],
+    ["K", "Q", "J", "R"]
+  ];
+
+  // La letra en el tope vertical (a las 12 en punto) es la de índice (4 - R_i) % 4
+  const word = [
+    letters[0][(4 - rotations[0]) % 4],
+    letters[1][(4 - rotations[1]) % 4],
+    letters[2][(4 - rotations[2]) % 4],
+    letters[3][(4 - rotations[3]) % 4]
+  ].join("");
+
+  if (word === "AMOR") {
+    // Bloquear clics temporales
+    const board = document.getElementById("astrolabe-board");
+    if (board) board.style.pointerEvents = "none";
+    
     playSound("success");
-    gameState.puzzles.elements.solved = true;
-    saveGame();
-    renderState();
-    triggerSuccessAnimation("pane-elements");
+    
+    // Esperar 2 segundos antes de revelar la combinación y el éxito de la sala
+    setTimeout(() => {
+      gameState.puzzles.elements.solved = true;
+      saveGame();
+      renderState();
+      triggerSuccessAnimation("pane-elements");
+      if (board) board.style.pointerEvents = "";
+    }, 2000);
   }
 }
 
@@ -1772,7 +1783,7 @@ document.addEventListener("DOMContentLoaded", () => {
             let prevRoomName = "";
             if (btnInfo.room === "study") prevRoomName = "la Sala I (El Acertijo)";
             if (btnInfo.room === "caesar") prevRoomName = "la Sala II (Marcianitos)";
-            if (btnInfo.room === "elements") prevRoomName = "la Sala III (El Mensaje)";
+            if (btnInfo.room === "elements") prevRoomName = "la Sala III (La Pirámide)";
             message = `¡Sala bloqueada! Resuelve primero ${prevRoomName}.`;
           }
           
@@ -1853,6 +1864,17 @@ document.addEventListener("DOMContentLoaded", () => {
   const resetPyramidBtn = document.getElementById("btn-reset-pyramid");
   if (resetPyramidBtn) {
     resetPyramidBtn.addEventListener("click", resetPyramidGame);
+  }
+
+  // Astrolabio
+  const resetAstrolabeBtn = document.getElementById("btn-reset-astrolabe");
+  if (resetAstrolabeBtn) {
+    resetAstrolabeBtn.addEventListener("click", () => {
+      playSound("click");
+      gameState.puzzles.elements.astrolabe = [1, 2, 1, 2];
+      saveGame();
+      renderElementsPuzzle();
+    });
   }
 
   // Caja fuerte teclado

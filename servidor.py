@@ -8,6 +8,11 @@ import ctypes
 
 PORT = 8082
 
+def get_base_path():
+    if getattr(sys, 'frozen', False):
+        return os.path.dirname(sys.executable)
+    return os.path.dirname(os.path.abspath(__file__))
+
 def run_game_thread(exe_path, py_path, bat_path, browser_hwnd):
     try:
         # Minimizar el navegador (browser_hwnd) para dejar ver el juego
@@ -48,7 +53,7 @@ class CustomHandler(http.server.SimpleHTTPRequestHandler):
     def launch_game(self):
         try:
             # Determinar rutas
-            base_dir = os.path.dirname(os.path.abspath(__file__))
+            base_dir = get_base_path()
             exe_path = os.path.join(base_dir, "Ignacio&Lucia", "Marcianitos", "Maya Invaders ❤️.exe")
             py_path = os.path.join(base_dir, "Ignacio&Lucia", "Marcianitos", "main.py")
             bat_path = os.path.join(base_dir, "Ignacio&Lucia", "Marcianitos", "Jugar.bat")
@@ -81,7 +86,7 @@ class CustomHandler(http.server.SimpleHTTPRequestHandler):
             self.launch_game()
         elif self.path == '/reset-scores':
             try:
-                base_dir = os.path.dirname(os.path.abspath(__file__))
+                base_dir = get_base_path()
                 score_path = os.path.join(base_dir, "Ignacio&Lucia", "Marcianitos", "data", "scores.json")
                 if os.path.exists(score_path):
                     os.remove(score_path)
@@ -101,7 +106,7 @@ class CustomHandler(http.server.SimpleHTTPRequestHandler):
             self.launch_game()
         elif self.path == '/check-score':
             try:
-                base_dir = os.path.dirname(os.path.abspath(__file__))
+                base_dir = get_base_path()
                 score_path = os.path.join(base_dir, "Ignacio&Lucia", "Marcianitos", "data", "scores.json")
                 
                 if os.path.exists(score_path):
@@ -123,16 +128,37 @@ class CustomHandler(http.server.SimpleHTTPRequestHandler):
         else:
             super().do_GET()
 
+import webbrowser
+
 # Iniciar servidor
 if __name__ == '__main__':
     # Cambiar al directorio del script
-    os.chdir(os.path.dirname(os.path.abspath(__file__)))
+    os.chdir(get_base_path())
+    try:
+        import ctypes
+        ctypes.windll.kernel32.SetConsoleTitleW("Escape Room Boda Ignacio & Lucía - Servidor")
+    except Exception:
+        pass
     socketserver.ThreadingTCPServer.allow_reuse_address = True
     try:
         with socketserver.ThreadingTCPServer(("", PORT), CustomHandler) as httpd:
-            print(f"Servidor del Escape Room iniciado en http://localhost:{PORT}")
-            print("Puedes abrir el juego en tu navegador o hacer doble click en index.html")
-            print("Presiona Ctrl+C para salir.")
+            print("=" * 60)
+            print("        ESCAPE ROOM - BODA IGNACIO & LUCÍA        ")
+            print("=" * 60)
+            print(f"Servidor iniciado en: http://localhost:{PORT}")
+            print("\nAbriendo el escape room en tu navegador predeterminado...")
+            print("POR FAVOR, NO CIERRES ESTA VENTANA MIENTRAS JUEGUES.")
+            print("Al terminar de jugar, puedes cerrar esta ventana para salir.")
+            print("=" * 60)
+            
+            # Abrir navegador automáticamente tras una pequeña espera en un hilo independiente
+            def open_browser():
+                import time
+                time.sleep(1.0)
+                webbrowser.open(f"http://localhost:{PORT}")
+            
+            threading.Thread(target=open_browser, daemon=True).start()
+            
             httpd.serve_forever()
     except Exception as e:
         print(f"Error al iniciar el servidor: {e}")

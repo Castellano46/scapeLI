@@ -1811,7 +1811,7 @@ footer {
    ========================================== */
 .pyramid-board {
   position: relative;
-  width: 400px;
+  width: 480px;
   height: 350px;
   margin: 10px auto;
 }
@@ -1923,5 +1923,46 @@ footer {
 .pyramid-reset-btn:active {
   transform: translateY(0.5px);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* ==========================================
+   PRUEBA 4: El Astrolabio del Destino
+   ========================================== */
+.astrolabe-ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  border: 3px solid rgba(223, 186, 79, 0.45);
+  box-shadow: 
+    0 0 12px rgba(0, 0, 0, 0.7),
+    inset 0 0 12px rgba(0, 0, 0, 0.7);
+  background: radial-gradient(circle, #2a1c0d 0%, #150f08 100%);
+  cursor: pointer;
+  box-sizing: border-box;
+  transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1.15), border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.astrolabe-ring:hover {
+  border-color: var(--gold-bright);
+  box-shadow: 
+    0 0 15px rgba(223, 186, 79, 0.4),
+    inset 0 0 15px rgba(223, 186, 79, 0.4);
+}
+
+.astrolabe-ring-span {
+  position: absolute;
+  font-family: 'Cinzel', 'Georgia', serif;
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: rgba(223, 186, 79, 0.9);
+  text-shadow: 0 0 5px rgba(0, 0, 0, 0.9);
+  pointer-events: none;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 

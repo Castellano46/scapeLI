@@ -1,2 +1,4 @@
 Set WshShell = CreateObject("WScript.Shell")
-WshShell.Run "python ""c:\Users\Pedro\Desktop\Proyectos\Scape\servidor.py""", 0, False
+Set fso = CreateObject("Scripting.FileSystemObject")
+currentDir = fso.GetParentFolderName(WScript.ScriptFullName)
+WshShell.Run """" & currentDir & "\Iniciar_Escape_Room.exe""", 0, False
