@@ -1107,12 +1107,12 @@ function renderElementsPuzzle() {
   if (!board) return;
   board.innerHTML = "";
 
-  // Configuración de los anillos concéntricos
+  // Configuración de los anillos concéntricos con 8 letras (incluyendo diagonales)
   const ringsConfig = [
-    { id: 1, size: 120, zIndex: 4, letters: ["A", "C", "T", "N"] },
-    { id: 2, size: 200, zIndex: 3, letters: ["U", "M", "E", "P"] },
-    { id: 3, size: 280, zIndex: 2, letters: ["H", "D", "O", "X"] },
-    { id: 4, size: 360, zIndex: 1, letters: ["K", "Q", "J", "R"] }
+    { id: 1, size: 120, zIndex: 4, letters: ["A", "R", "E", "I", "O", "S", "T", "L"] },
+    { id: 2, size: 200, zIndex: 3, letters: ["U", "M", "E", "P", "A", "O", "I", "N"] },
+    { id: 3, size: 280, zIndex: 2, letters: ["H", "D", "O", "X", "M", "R", "A", "E"] },
+    { id: 4, size: 360, zIndex: 1, letters: ["K", "Q", "J", "R", "O", "A", "S", "E"] }
   ];
 
   const rotations = gameState.puzzles.elements.astrolabe;
@@ -1124,33 +1124,23 @@ function renderElementsPuzzle() {
     ringEl.style.height = `${cfg.size}px`;
     ringEl.style.zIndex = cfg.zIndex;
     
-    // Aplicar la rotación correspondiente
+    // Aplicar la rotación correspondiente en incrementos de 45 grados (8 posiciones)
     const rIndex = rotations[idx];
-    ringEl.style.transform = `translate(-50%, -50%) rotate(${rIndex * 90}deg)`;
+    ringEl.style.transform = `translate(-50%, -50%) rotate(${rIndex * 45}deg)`;
 
-    // Crear las 4 letras distribuidas a 90 grados
+    // Crear las 8 letras distribuidas radialmente a intervalos de 45 grados
     cfg.letters.forEach((char, letterIdx) => {
       const span = document.createElement("span");
       span.className = "astrolabe-ring-span";
       span.innerText = char;
       
-      if (letterIdx === 0) { // Arriba
-        span.style.top = "8px";
-        span.style.left = "50%";
-        span.style.transform = "translateX(-50%)";
-      } else if (letterIdx === 1) { // Derecha
-        span.style.right = "8px";
-        span.style.top = "50%";
-        span.style.transform = "translateY(-50%) rotate(90deg)";
-      } else if (letterIdx === 2) { // Abajo
-        span.style.bottom = "8px";
-        span.style.left = "50%";
-        span.style.transform = "translateX(-50%) rotate(180deg)";
-      } else if (letterIdx === 3) { // Izquierda
-        span.style.left = "8px";
-        span.style.top = "50%";
-        span.style.transform = "translateY(-50%) rotate(270deg)";
-      }
+      // Posicionamiento radial matemático preciso usando transformaciones
+      const radius = (cfg.size / 2) - 18;
+      const angle = letterIdx * 45;
+      span.style.position = "absolute";
+      span.style.left = "50%";
+      span.style.top = "50%";
+      span.style.transform = `translate(-50%, -50%) rotate(${angle}deg) translateY(-${radius}px)`;
       
       ringEl.appendChild(span);
     });
@@ -1183,22 +1173,22 @@ function rotateRing(idx) {
   playSound("gear");
   const rotations = gameState.puzzles.elements.astrolabe || [1, 2, 1, 2];
 
-  // Aplicar fricción (interlocking) entre los anillos concéntricos
+  // Aplicar fricción (interlocking) entre los anillos concéntricos (modulo 8)
   if (idx === 0) { // Anillo 1 gira a sí mismo y al Anillo 2
-    rotations[0] = (rotations[0] + 1) % 4;
-    rotations[1] = (rotations[1] + 1) % 4;
+    rotations[0] = (rotations[0] + 1) % 8;
+    rotations[1] = (rotations[1] + 1) % 8;
   }
   else if (idx === 1) { // Anillo 2 gira a sí mismo y al Anillo 3 en sentido antihorario
-    rotations[1] = (rotations[1] + 1) % 4;
-    rotations[2] = (rotations[2] - 1 + 4) % 4;
+    rotations[1] = (rotations[1] + 1) % 8;
+    rotations[2] = (rotations[2] - 1 + 8) % 8;
   }
   else if (idx === 2) { // Anillo 3 gira a sí mismo y al Anillo 4
-    rotations[2] = (rotations[2] + 1) % 4;
-    rotations[3] = (rotations[3] + 1) % 4;
+    rotations[2] = (rotations[2] + 1) % 8;
+    rotations[3] = (rotations[3] + 1) % 8;
   }
   else if (idx === 3) { // Anillo 4 gira a sí mismo y al Anillo 1 en sentido antihorario
-    rotations[3] = (rotations[3] + 1) % 4;
-    rotations[0] = (rotations[0] - 1 + 4) % 4;
+    rotations[3] = (rotations[3] + 1) % 8;
+    rotations[0] = (rotations[0] - 1 + 8) % 8;
   }
 
   gameState.puzzles.elements.astrolabe = rotations;
@@ -1210,20 +1200,20 @@ function rotateRing(idx) {
 function checkAstrolabeSolution() {
   const rotations = gameState.puzzles.elements.astrolabe || [1, 2, 1, 2];
   
-  // Lista de letras correspondientes
+  // Lista de letras correspondientes (8 letras por anillo)
   const letters = [
-    ["A", "C", "T", "N"],
-    ["U", "M", "E", "P"],
-    ["H", "D", "O", "X"],
-    ["K", "Q", "J", "R"]
+    ["A", "R", "E", "I", "O", "S", "T", "L"],
+    ["U", "M", "E", "P", "A", "O", "I", "N"],
+    ["H", "D", "O", "X", "M", "R", "A", "E"],
+    ["K", "Q", "J", "R", "O", "A", "S", "E"]
   ];
 
-  // La letra en el tope vertical (a las 12 en punto) es la de índice (4 - R_i) % 4
+  // La letra en el tope vertical (a las 12 en punto) es la de índice (8 - R_i) % 8
   const word = [
-    letters[0][(4 - rotations[0]) % 4],
-    letters[1][(4 - rotations[1]) % 4],
-    letters[2][(4 - rotations[2]) % 4],
-    letters[3][(4 - rotations[3]) % 4]
+    letters[0][(8 - rotations[0]) % 8],
+    letters[1][(8 - rotations[1]) % 8],
+    letters[2][(8 - rotations[2]) % 8],
+    letters[3][(8 - rotations[3]) % 8]
   ].join("");
 
   if (word === "AMOR") {
@@ -1876,6 +1866,36 @@ document.addEventListener("DOMContentLoaded", () => {
       renderElementsPuzzle();
     });
   }
+
+  // Astrolabio info modal listeners
+  const infoAstrolabeBtn = document.getElementById("btn-info-astrolabe");
+  if (infoAstrolabeBtn) {
+    infoAstrolabeBtn.addEventListener("click", () => {
+      playSound("click");
+      const infoModal = document.getElementById("astrolabe-info-modal");
+      if (infoModal) infoModal.classList.add("active");
+    });
+  }
+
+  const infoAstrolabeClose = document.getElementById("astrolabe-info-close");
+  if (infoAstrolabeClose) {
+    infoAstrolabeClose.addEventListener("click", () => {
+      playSound("click");
+      const infoModal = document.getElementById("astrolabe-info-modal");
+      if (infoModal) infoModal.classList.remove("active");
+    });
+  }
+
+  const infoAstrolabeModal = document.getElementById("astrolabe-info-modal");
+  if (infoAstrolabeModal) {
+    infoAstrolabeModal.addEventListener("click", (e) => {
+      if (e.target.id === "astrolabe-info-modal") {
+        playSound("click");
+        infoAstrolabeModal.classList.remove("active");
+      }
+    });
+  }
+
 
   // Caja fuerte teclado
   const keys = document.querySelectorAll(".key-btn");

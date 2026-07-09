@@ -335,17 +335,20 @@
                 <!-- Astrolabio Mecánico -->
                 <div class="astrolabe-device" style="position: relative; width: 380px; height: 380px; background: radial-gradient(circle, #2d1f10 0%, #150f08 100%); border: 4px solid var(--gold-dark); border-radius: 50%; box-shadow: 0 0 30px rgba(0,0,0,0.8), inset 0 0 30px rgba(223,186,79,0.3); overflow: hidden;">
                   
-                  <!-- Línea de alineación superior (glowing marker) -->
-                  <div class="astrolabe-marker" style="position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 4px; height: 35px; background: linear-gradient(to bottom, var(--gold-bright), transparent); z-index: 15; box-shadow: 0 0 8px var(--gold-bright);"></div>
-                  <div class="astrolabe-marker-arrow" style="position: absolute; top: 32px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 6px solid transparent; border-right: 6px solid transparent; border-top: 8px solid var(--gold-bright); z-index: 15; filter: drop-shadow(0 0 4px var(--gold-bright));"></div>
+                  <!-- Enmarcador visual de la palabra (marker frame) -->
+                  <div class="astrolabe-target-frame"></div>
+
 
                   <!-- Anillos Concéntricos generados dinámicamente con JS -->
                   <div id="astrolabe-board" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></div>
 
                 </div>
 
-                <!-- Botón de reset -->
-                <button id="btn-reset-astrolabe" class="pyramid-reset-btn" style="margin-top: 10px;"><i class="fas fa-redo-alt"></i> Reiniciar Astrolabio</button>
+                <!-- Botones de control -->
+                <div style="display: flex; gap: 15px; margin-top: 10px;">
+                  <button id="btn-reset-astrolabe" class="pyramid-reset-btn"><i class="fas fa-redo-alt"></i> Reiniciar Astrolabio</button>
+                  <button id="btn-info-astrolabe" class="pyramid-reset-btn" style="border-color: var(--rose-gold); color: var(--rose-gold);"><i class="fas fa-info-circle"></i> Funcionamiento</button>
+                </div>
 
               </div>
             </div>
@@ -483,6 +486,42 @@
           <div id="hint-text-lv2" class="hint-text"></div>
         </div>
 
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL DE EXPLICACIÓN DEL ASTROLABIO -->
+  <div id="astrolabe-info-modal" class="modal">
+    <div class="modal-content" style="max-width: 520px;">
+      <div class="modal-header">
+        <h4><i class="fas fa-cog"></i> Mecánica del Astrolabio</h4>
+        <button id="astrolabe-info-close" class="modal-close"><i class="fas fa-times-circle"></i></button>
+      </div>
+      <div style="color: var(--text-light); line-height: 1.6; font-size: 0.95rem; display: flex; flex-direction: column; gap: 15px;">
+        <p>El Astrolabio del Destino consta de <strong>cuatro anillos concéntricos</strong>. Debido a la fricción de sus engranajes, al hacer clic sobre ellos se transmiten los movimientos de la siguiente manera:</p>
+        
+        <ul style="list-style-type: none; padding-left: 0; display: flex; flex-direction: column; gap: 12px;">
+          <li style="border-left: 3px solid var(--gold); padding-left: 12px; margin-bottom: 2px;">
+            <strong style="color: var(--gold);">Anillo 1 (Centro - Letras A, R, E...):</strong><br>
+            Al pulsar este anillo, gira él mismo y arrastra al <strong>Anillo 2</strong>. Ambos giran 1 posición en sentido horario (+45°).
+          </li>
+          <li style="border-left: 3px solid var(--rose-gold); padding-left: 12px; margin-bottom: 2px;">
+            <strong style="color: var(--rose-gold);">Anillo 2 (Letras U, M, E...):</strong><br>
+            Al pulsar este anillo, gira él mismo en sentido horario (+45°) y arrastra al <strong>Anillo 3</strong> en sentido contrario/antihorario (-45°).
+          </li>
+          <li style="border-left: 3px solid var(--gold); padding-left: 12px; margin-bottom: 2px;">
+            <strong style="color: var(--gold);">Anillo 3 (Letras H, D, O...):</strong><br>
+            Al pulsar este anillo, gira él mismo y arrastra al <strong>Anillo 4 (Exterior)</strong>. Ambos giran 1 posición en sentido horario (+45°).
+          </li>
+          <li style="border-left: 3px solid var(--rose-gold); padding-left: 12px; margin-bottom: 2px;">
+            <strong style="color: var(--rose-gold);">Anillo 4 (Exterior - Letras K, Q, J...):</strong><br>
+            Al pulsar este anillo, gira él mismo en sentido horario (+45°) y arrastra al <strong>Anillo 1 (Centro)</strong> en sentido contrario/antihorario (-45°).
+          </li>
+        </ul>
+        
+        <p style="font-style: italic; color: var(--gold); margin-top: 5px; font-weight: bold; text-align: center;">
+          "Alinead las runas correctas en la vertical superior para deletrear la palabra AMOR de dentro hacia fuera."
+        </p>
       </div>
     </div>
   </div>
