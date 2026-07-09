@@ -355,6 +355,15 @@ function saveGame() {
 
 // Carga estado de LocalStorage
 function loadGame() {
+  // Comprobar si se solicita reiniciar la partida mediante la URL al abrir el servidor
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get("reset") === "true") {
+    localStorage.removeItem("escape_room_state");
+    // Limpiar el parámetro de la URL para que no se vuelva a reiniciar al recargar con F5
+    window.history.replaceState({}, document.title, window.location.pathname);
+    return false;
+  }
+
   const saved = localStorage.getItem("escape_room_state");
   if (saved) {
     try {

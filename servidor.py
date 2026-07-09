@@ -134,19 +134,28 @@ import webbrowser
 if __name__ == '__main__':
     # Cambiar al directorio del script
     os.chdir(get_base_path())
+    
+    # Limpiar puntuaciones de Maya Invaders al arrancar para reiniciar progreso del minijuego
+    try:
+        score_path = os.path.join(get_base_path(), "Ignacio&Lucia", "Marcianitos", "data", "scores.json")
+        if os.path.exists(score_path):
+            os.remove(score_path)
+    except Exception:
+        pass
+
     try:
         import ctypes
-        ctypes.windll.kernel32.SetConsoleTitleW("Escape Room Boda Ignacio & Lucía - Servidor")
+        ctypes.windll.kernel32.SetConsoleTitleW("Boda Ignacio & Lucía")
     except Exception:
         pass
     socketserver.ThreadingTCPServer.allow_reuse_address = True
     try:
         with socketserver.ThreadingTCPServer(("", PORT), CustomHandler) as httpd:
             print("=" * 60)
-            print("        ESCAPE ROOM - BODA IGNACIO & LUCÍA        ")
+            print("              BODA IGNACIO & LUCÍA              ")
             print("=" * 60)
             print(f"Servidor iniciado en: http://localhost:{PORT}")
-            print("\nAbriendo el escape room en tu navegador predeterminado...")
+            print("\nAbriendo En busca del Sobbre Perdido en tu navegador predeterminado...")
             print("POR FAVOR, NO CIERRES ESTA VENTANA MIENTRAS JUEGUES.")
             print("Al terminar de jugar, puedes cerrar esta ventana para salir.")
             print("=" * 60)
@@ -155,7 +164,7 @@ if __name__ == '__main__':
             def open_browser():
                 import time
                 time.sleep(1.0)
-                webbrowser.open(f"http://localhost:{PORT}")
+                webbrowser.open(f"http://localhost:{PORT}/?reset=true")
             
             threading.Thread(target=open_browser, daemon=True).start()
             
@@ -163,3 +172,4 @@ if __name__ == '__main__':
     except Exception as e:
         print(f"Error al iniciar el servidor: {e}")
         input("Presiona Enter para cerrar...")
+
